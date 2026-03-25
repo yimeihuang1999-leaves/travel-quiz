@@ -243,7 +243,7 @@ const questions=[
   {text:"你会带哪种旅行纪念品回家？",opts:["🧲 冰箱贴","🪨 一块当地的石头/树叶","🏺 手工艺品","📷 什么都不带，只有照片"]},
   {text:"用三个词形容你最近的周末，最像哪个？",opts:["😴 躺平、外卖、刷剧","🎉 聚会、探店、暴走","📚 看书、咖啡、发呆","😤 加班、带娃、累"]},
   {text:"哪种颜色组合最让你放松？",opts:["💙 蓝+白","🌿 绿+棕","🧡 橙+黄","🖤 黑+灰"]},
-  {text:"你喜欢怎么逛一座新城？",opts:["🚇 地铁穿梭","🚌 公交漫游","🚶 暴走探索","🚕 打车直达"]},
+  {text:"你喜欢怎么逛一座新城？",opts:["🚇 地铁穿梭","🚌 公交漫游","🚶 暴走探索","🚕 打车直达","🚲 骑共享单车"]},
   {text:"如果给你一个假期时长，你选？",opts:["⚡ 3天小短途","✈️ 5-7天刚刚好","🏝️ 10-15天深度游","🌍 一个月以上"]},
   {text:"你手机相册里最多的是？",opts:["🌅 风景/天空","🍱 美食特写","🤳 自拍/朋友合影","🏛️ 建筑/街景"]},
   {text:"你最想在旅途中偶遇什么？",opts:["🏪 藏在巷子里的宝藏小店","🎊 一场当地传统节日","🤝 一个聊得来的陌生人","🏔️ 一片只有自己的美景"]},
@@ -253,7 +253,7 @@ const questions=[
 
 // Per-dim theoretical max across 15 questions (sum of best-case option scores)
 // 理论最高分（各维度在15题中能累积的最大值，用于归一化到1-5分）
-const dimMax={natural:11,social:9,plan:7,slow:12,culture:8,heal:11,warm:5,taste:9};
+const dimMax={natural:11,social:9,plan:7,slow:13,culture:8,heal:12,warm:5,taste:9};
 
 // 维度权重：heal和culture更重要，warm稍作加强
 const dimWeights={natural:1.3,social:1.1,plan:1.0,slow:1.1,culture:1.4,heal:1.6,warm:1.2,taste:1.1};
@@ -296,8 +296,8 @@ const dimMap=[
   [{natural:.5,heal:1,warm:.5},{natural:1,slow:.5},{warm:1,taste:.5},{plan:.5}],
 
   // Q10 怎么逛新城？
-  // A地铁穿梭→计划+社交  B公交漫游→慢+文化  C暴走探索→自然+慢  D打车直达→计划负（省事懒）
-  [{plan:1,social:.5},{slow:1,culture:.5},{natural:.5,slow:1},{plan:-.5}],
+  // A地铁穿梭→计划+社交  B公交漫游→慢+文化  C暴走探索→自然+慢  D打车直达→计划负  E骑共享单车→自然+慢+治愈
+  [{plan:1,social:.5},{slow:1,culture:.5},{natural:.5,slow:1},{plan:-.5},{natural:.5,slow:1,heal:.5}],
 
   // Q11 假期时长选哪个？
   // A3天→计划（精准高效）  B5-7天→计划中等  C10-15天→文化（深度游）  D一个月以上→慢+治愈（彻底逃离）
@@ -735,26 +735,26 @@ function renderResult(city,raw,norm,conf,real,ranked){
 
 // 【第一层】本地图片路径表 — 运行 setup_photos.py 后由脚本自动更新此处
 const cityPhotos={
-  '厦门':'images/xiamen.jpg',
-  '大理':'images/dali.jpg',
-  '成都':'images/chengdu.jpg',
-  '青岛':'images/qingdao.jpg',
-  '西安':'images/xian.jpg',
-  '上海':'images/shanghai.jpg',
-  '桂林':'images/guilin.jpg',
-  '拉萨':'images/lasa.jpg',
-  '长沙':'images/changsha.jpg',
-  '威海':'images/weihai.jpg',
-  '泉州':'images/quanzhou.jpg',
-  '腾冲':'images/tengchong.jpg',
-  '杭州':'images/hangzhou.jpg',
-  '苏州':'images/suzhou.jpg',
-  '重庆':'images/chongqing.jpg',
-  '广州':'images/guangzhou.jpg',
-  '丽江':'images/lijiang.jpg',
-  '敦煌':'images/dunhuang.jpg',
-  '哈尔滨':'images/haerbin.jpg',
-  '三亚':'images/sanya.jpg'
+  '厦门':'./xiamen.jpg',
+  '大理':'./dali.jpg',
+  '成都':'./chengdu.jpg',
+  '青岛':'./qingdao.jpg',
+  '西安':'./xian.jpg',
+  '上海':'./shanghai.jpg',
+  '桂林':'./guilin.jpg',
+  '拉萨':'./lasa.jpg',
+  '长沙':'./changsha.jpg',
+  '威海':'./weihai.jpg',
+  '泉州':'./quanzhou.jpg',
+  '腾冲':'./tengchong.jpg',
+  '杭州':'./hangzhou.jpg',
+  '苏州':'./suzhou.jpg',
+  '重庆':'./chongqing.jpg',
+  '广州':'./guangzhou.jpg',
+  '丽江':'./lijiang.jpg',
+  '敦煌':'./dunhuang.jpg',
+  '哈尔滨':'./haerbin.jpg',
+  '三亚':'./sanya.jpg'
 };
 
 const UNSPLASH_KEY='CuBc0BLuqMUHExh7V7os7BBRDy_55Fz3t7A-ssMT8uY';
