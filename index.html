@@ -136,7 +136,7 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
   <div class="home-icon">🧭</div>
   <div class="home-tag">心理旅行测评</div>
   <h1 class="home-title">测测你最近<br>最适合去哪座城市</h1>
-  <p class="home-sub">15道题，读懂你藏在选择里的旅行灵魂，为你匹配一座专属城市。</p>
+  <p class="home-sub">20道题，读懂你藏在选择里的旅行灵魂，为你匹配一座专属城市。</p>
   <div class="home-pills">
     <span class="pill">🌊 治愈系</span><span class="pill">🍜 美食控</span>
     <span class="pill">🏯 文化控</span><span class="pill">🌲 自然派</span><span class="pill">☕ 慢生活</span>
@@ -148,7 +148,7 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 <!-- QUIZ -->
 <div id="quiz" class="screen">
   <div class="quiz-top">
-    <div class="progress-header"><span id="progress-text">第 1 / 15 题</span><span id="progress-pct">0%</span></div>
+    <div class="progress-header"><span id="progress-text">第 1 / 20 题</span><span id="progress-pct">0%</span></div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
   <div class="quiz-body">
@@ -234,90 +234,100 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 
 <script>
 const questions=[
-  {text:"如果有一天你变成一种天气，你希望是？",opts:["🌧️ 毛毛雨，湿润又朦胧","☀️ 晴朗无云，阳光充足","🌤️ 多云凉爽，舒适刚好","⛈️ 狂风暴雨，酣畅淋漓"]},
-  {text:"你更想被哪种声音叫醒？",opts:["🌊 海浪声","🐦 鸟叫声","☕ 咖啡机磨豆声","🔇 什么声音都没有"]},
-  {text:"旅行中迷路了，你的第一反应是？",opts:["📱 掏出手机开导航","🙋 找当地人问路","🚶 随便逛，反正总能回去","🧍 站在原地等同伴"]},
-  {text:"你愿意在哪幅画里待一整天？",opts:["🌸 莫奈《睡莲》","🌌 梵高《星空》","🏘️ 张择端《清明上河图》","🔲 蒙德里安格子画"]},
-  {text:"早餐单选，你选哪个？",opts:["🍜 当地特色粥粉","🥐 西式面包咖啡","🥗 水果酸奶碗","🍳 丰盛自助餐"]},
-  {text:"理想的住宿窗外风景是？",opts:["🌊 大海","🏘️ 古城小巷","⛰️ 山峦云雾","🏙️ 繁华商业街"]},
-  {text:"你会带哪种旅行纪念品回家？",opts:["🧲 冰箱贴","🪨 一块当地的石头/树叶","🏺 手工艺品","📷 什么都不带，只有照片"]},
-  {text:"用三个词形容你最近的周末，最像哪个？",opts:["😴 躺平、外卖、刷剧","🎉 聚会、探店、暴走","📚 看书、咖啡、发呆","😤 加班、带娃、累"]},
-  {text:"哪种颜色组合最让你放松？",opts:["💙 蓝+白","🌿 绿+棕","🧡 橙+黄","🖤 黑+灰"]},
+  {text:"如果有一天你变成一种天气，你希望是？",opts:["🌧️ 毛毛雨，湿润又朦胧","☀️ 晴朗无云，阳光充足","🌤️ 多云凉爽，舒适刚好","⛈️ 狂风暴雨，酣畅淋漓","🌫️ 薄雾弥漫，若隐若现"]},
+  {text:"你更想被哪种声音叫醒？",opts:["🌊 海浪声","🐦 鸟叫声","☕ 咖啡机磨豆声","🔇 什么声音都没有","🌧️ 窗外的雨声"]},
+  {text:"旅行中迷路了，你的第一反应是？",opts:["📱 掏出手机开导航","🙋 找当地人问路","🚶 随便逛，反正总能回去","🧍 站在原地等同伴","☕ 先找个咖啡馆坐下来研究"]},
+  {text:"你愿意在哪幅画里待一整天？",opts:["🌸 莫奈《睡莲》","🌌 梵高《星空》","🏘️ 张择端《清明上河图》","🔲 蒙德里安格子画","🏔️ 霍珀《海边的房间》"]},
+  {text:"早餐单选，你选哪个？",opts:["🍜 当地特色粥粉","🥐 西式面包咖啡","🥗 水果酸奶碗","🍳 丰盛自助餐","🥢 随便找个路边摊解决"]},
+  {text:"理想的住宿窗外风景是？",opts:["🌊 大海","🏘️ 古城小巷","⛰️ 山峦云雾","🏙️ 繁华商业街","🌾 稻田与远山"]},
+  {text:"你会带哪种旅行纪念品回家？",opts:["🧲 冰箱贴","🪨 一块当地的石头/树叶","🏺 手工艺品","📷 什么都不带，只有照片","🫙 一罐当地特产吃食"]},
+  {text:"用三个词形容你最近的周末，最像哪个？",opts:["😴 躺平、外卖、刷剧","🎉 聚会、探店、暴走","📚 看书、咖啡、发呆","😤 加班、带娃、累","🏃 运动、爬山、户外"]},
+  {text:"哪种颜色组合最让你放松？",opts:["💙 蓝+白","🌿 绿+棕","🧡 橙+黄","🖤 黑+灰","🌸 粉+米白"]},
   {text:"你喜欢怎么逛一座新城？",opts:["🚇 地铁穿梭","🚌 公交漫游","🚶 暴走探索","🚕 打车直达","🚲 骑共享单车"]},
   {text:"如果给你一个假期时长，你选？",opts:["⚡ 3天小短途","✈️ 5-7天刚刚好","🏝️ 10-15天深度游","🌍 一个月以上"]},
-  {text:"你手机相册里最多的是？",opts:["🌅 风景/天空","🍱 美食特写","🤳 自拍/朋友合影","🏛️ 建筑/街景"]},
-  {text:"你最想在旅途中偶遇什么？",opts:["🏪 藏在巷子里的宝藏小店","🎊 一场当地传统节日","🤝 一个聊得来的陌生人","🏔️ 一片只有自己的美景"]},
-  {text:"你觉得自己更像哪种动物？",opts:["🐱 猫（独立、随性）","🐶 狗（热情、好奇）","🐦 鸟（自由、爱飞）","🐟 鱼（安静、游荡）"]},
-  {text:"睡前最后一件事通常是？",opts:["📅 计划明天的行程","🌙 回忆今天的美好","🍽️ 刷美食攻略","🎵 听歌/冥想"]}
+  {text:"你手机相册里最多的是？",opts:["🌅 风景/天空","🍱 美食特写","🤳 自拍/朋友合影","🏛️ 建筑/街景","🐾 动植物/小动物"]},
+  {text:"你最想在旅途中偶遇什么？",opts:["🏪 藏在巷子里的宝藏小店","🎊 一场当地传统节日","🤝 一个聊得来的陌生人","🏔️ 一片只有自己的美景","🍜 排队排到怀疑人生的苍蝇馆子"]},
+  {text:"你觉得自己更像哪种动物？",opts:["🐱 猫（独立、随性）","🐶 狗（热情、好奇）","🐦 鸟（自由、爱飞）","🐟 鱼（安静、游荡）","🐻 熊（能吃能睡、偶尔出来玩）"]},
+  {text:"睡前最后一件事通常是？",opts:["📅 计划明天的行程","🌙 回忆今天的美好","🍽️ 刷美食攻略","🎵 听歌/冥想"]},
+  {text:"旅行中最让你崩溃的是哪种情况？",opts:["🗺️ 景点没有想象中好看","🈵 到处都是人，挤得要死","🌧️ 天气一直不好","💸 花钱比计划多一倍","🚌 交通延误，白白等待"]},
+  {text:"你理想的旅行同伴是？",opts:["🧍 就我一个人","👫 另一半","👯 最好的朋友","👨‍👩‍👧 全家人一起","🌐 旅途中认识的新朋友"]},
+  {text:"到了一个新城市，你第一件事是？",opts:["🗺️ 查攻略，规划好今天路线","🚶 出门瞎逛，跟着感觉走","🍜 先找好吃的，吃饱了再说","☕ 找家咖啡馆，感受一下这个城市的节奏","📸 找最出片的地方先拍照"]},
+  {text:"如果旅途中只能选一种体验，你选？",opts:["🌅 看一次绝美的日出或日落","🎭 参加一场当地的民俗活动","🍽️ 吃一顿当地人才知道的馆子","🛶 在某处自然景观里独处半天","🏛️ 深入了解这座城市的历史"]},
+  {text:"你通常在旅行前多久开始做攻略？",opts:["📅 出发前一个月就开始规划","📋 提前一周查好大致路线","📱 前一天晚上才开始看","🎲 基本不做攻略，到了再说","🤝 完全跟着别人走，别人定我就去"]}
 ];
 
 // Per-dim theoretical max across 15 questions (sum of best-case option scores)
-// 理论最高分（各维度在15题中能累积的最大值，用于归一化到1-5分）
-const dimMax={natural:11,social:9,plan:7,slow:13,culture:8,heal:12,warm:5,taste:9};
+// 理论最高分（各维度在20题中能累积的最大值，用于归一化到1-5分）
+const dimMax={natural:16,social:12,plan:10,slow:17,culture:12,heal:16,warm:6,taste:12};
 
 // 维度权重：heal和culture更重要，warm稍作加强
 const dimWeights={natural:1.3,social:1.1,plan:1.0,slow:1.1,culture:1.4,heal:1.6,warm:1.2,taste:1.1};
 
 const dimMap=[
-  // Q1 你希望变成哪种天气？
-  // A毛毛雨→自然+慢+治愈+暖  B晴朗→自然+社交+治愈+暖  C多云凉爽→慢  D狂风暴雨→治愈负（刺激导向）
-  [{natural:1,slow:1,heal:1,warm:.5},{natural:1,social:.5,heal:.5,warm:1},{slow:1},{heal:-1}],
+  // Q1 天气（新增E薄雾→自然+慢+治愈，和毛毛雨类似但更孤独感）
+  [{natural:1,slow:1,heal:1,warm:.5},{natural:1,social:.5,heal:.5,warm:1},{slow:1},{heal:-1},{natural:1,slow:1,heal:.5}],
 
-  // Q2 被哪种声音叫醒？
-  // A海浪→自然+慢+治愈  B鸟叫→自然  C咖啡机→社交+美食  D无声→社交负+慢+治愈
-  [{natural:1,slow:1,heal:1},{natural:1},{social:.5,taste:.5},{social:-1,slow:1,heal:.5}],
+  // Q2 声音（新增E雨声→自然+慢+治愈）
+  [{natural:1,slow:1,heal:1},{natural:1},{social:.5,taste:.5},{social:-1,slow:1,heal:.5},{natural:.5,slow:1,heal:1}],
 
-  // Q3 迷路第一反应？
-  // A导航→计划  B问路人→社交  C随便逛→计划负+慢  D等同伴→社交负+治愈
-  [{plan:1},{social:1},{plan:-1,slow:1},{social:-.5,heal:.5}],
+  // Q3 迷路（新增E找咖啡馆研究→计划+慢，有条不紊）
+  [{plan:1},{social:1},{plan:-1,slow:1},{social:-.5,heal:.5},{plan:.5,slow:.5}],
 
-  // Q4 愿意待在哪幅画？
-  // A莫奈睡莲→自然+慢+治愈  B梵高星空→治愈  C清明上河图→文化+美食  D蒙德里安→计划（几何理性）
-  [{natural:1,slow:1,heal:1},{heal:.5},{culture:1,taste:.5},{plan:.5}],
+  // Q4 画（新增E霍珀海边房间→治愈+自然，孤独美学）
+  [{natural:1,slow:1,heal:1},{heal:.5},{culture:1,taste:.5},{plan:.5},{natural:.5,heal:1}],
 
-  // Q5 早餐选什么？
-  // A当地粥粉→慢+文化+美食  B西式咖啡→零信号（中性现代人）  C水果酸奶→计划（健康自律）  D丰盛自助→美食
-  [{slow:1,culture:.5,taste:1},{},{plan:.5},{taste:1}],
+  // Q5 早餐（新增E路边摊→随性+文化+美食）
+  [{slow:1,culture:.5,taste:1},{},{plan:.5},{taste:1},{culture:.5,taste:.5,plan:-.5}],
 
-  // Q6 住宿窗外风景？
-  // A大海→自然+治愈+暖  B古城小巷→文化+慢  C山峦云雾→自然+慢+治愈  D繁华商业街→社交+暖
-  [{natural:1,heal:1,warm:.5},{culture:1,slow:.5},{natural:1,slow:.5,heal:.5},{social:.5,warm:.5}],
+  // Q6 窗外风景（新增E稻田远山→自然+慢+治愈，最深度自然控）
+  [{natural:1,heal:1,warm:.5},{culture:1,slow:.5},{natural:1,slow:.5,heal:.5},{social:.5,warm:.5},{natural:1,slow:1,heal:1}],
 
-  // Q7 带什么纪念品？
-  // A冰箱贴→社交+暖（随大流）  B石头/树叶→自然（真正亲近自然才这样）  C手工艺品→文化  D只有照片→计划+治愈（极简）
-  [{social:.5,warm:.5},{natural:1},{culture:1},{plan:.5,heal:.5}],
+  // Q7 纪念品（新增E当地特产→美食+文化）
+  [{social:.5,warm:.5},{natural:1},{culture:1},{plan:.5,heal:.5},{taste:1,culture:.5}],
 
-  // Q8 最近周末像哪个？
-  // A躺平外卖→慢+治愈  B聚会探店→社交+计划负  C看书发呆→慢+文化  D加班带娃→慢负+治愈负（压力信号）
-  [{slow:1,heal:1},{social:1,plan:-.5},{slow:.5,culture:.5},{slow:-.5,heal:-.5}],
+  // Q8 周末（新增E运动爬山→自然+快节奏+heal）
+  [{slow:1,heal:1},{social:1,plan:-.5},{slow:.5,culture:.5},{slow:-.5,heal:-.5},{natural:1,heal:.5}],
 
-  // Q9 哪种颜色最放松？
-  // A蓝+白→自然+治愈+暖（海洋感）  B绿+棕→自然+慢（森林感）  C橙+黄→暖+美食（活泼温暖）  D黑+灰→计划（理性都市）
-  [{natural:.5,heal:1,warm:.5},{natural:1,slow:.5},{warm:1,taste:.5},{plan:.5}],
+  // Q9 颜色（新增E粉+米白→治愈+温暖，甜系）
+  [{natural:.5,heal:1,warm:.5},{natural:1,slow:.5},{warm:1,taste:.5},{plan:.5},{heal:1,warm:1}],
 
-  // Q10 怎么逛新城？
-  // A地铁穿梭→计划+社交  B公交漫游→慢+文化  C暴走探索→自然+慢  D打车直达→计划负  E骑共享单车→自然+慢+治愈
+  // Q10 逛城（5选项已有）
   [{plan:1,social:.5},{slow:1,culture:.5},{natural:.5,slow:1},{plan:-.5},{natural:.5,slow:1,heal:.5}],
 
-  // Q11 假期时长选哪个？
-  // A3天→计划（精准高效）  B5-7天→计划中等  C10-15天→文化（深度游）  D一个月以上→慢+治愈（彻底逃离）
+  // Q11 假期时长（保持4选项）
   [{plan:1},{plan:.5},{culture:.5},{slow:1,heal:1}],
 
-  // Q12 手机相册里最多的？
-  // A风景/天空→自然+治愈  B美食特写→美食  C自拍/合影→社交  D建筑/街景→文化
-  [{natural:1,heal:.5},{taste:1},{social:1},{culture:1}],
+  // Q12 相册（新增E动植物→自然+治愈）
+  [{natural:1,heal:.5},{taste:1},{social:1},{culture:1},{natural:1,heal:1}],
 
-  // Q13 最想在旅途偶遇什么？
-  // A宝藏小店→文化+美食  B传统节日→文化+社交  C聊得来的陌生人→社交  D只有自己的美景→自然+治愈
-  [{culture:.5,taste:.5},{culture:1,social:.5},{social:1},{natural:1,heal:1}],
+  // Q13 偶遇（新增E苍蝇馆子→美食+文化+随性）
+  [{culture:.5,taste:.5},{culture:1,social:.5},{social:1},{natural:1,heal:1},{taste:1,culture:.5,plan:-.5}],
 
-  // Q14 更像哪种动物？
-  // A猫→慢+治愈（独立随性）  B狗→社交（热情好奇）  C鸟→自然+治愈（自由）  D鱼→慢+治愈（安静游荡）
-  [{slow:1,heal:1},{social:1},{natural:1,heal:.5},{slow:.5,heal:.5}],
+  // Q14 动物（新增E熊→治愈+美食+慢，佛系玩家）
+  [{slow:1,heal:1},{social:1},{natural:1,heal:.5},{slow:.5,heal:.5},{heal:1,taste:.5,slow:.5}],
 
-  // Q15 睡前最后一件事？
-  // A计划行程→计划  B回忆今天→慢+治愈  C刷美食攻略→美食+文化  D听歌/冥想→治愈
-  [{plan:1},{heal:1,slow:.5},{taste:1,culture:.5},{heal:1}]
+  // Q15 睡前（保持4选项）
+  [{plan:1},{heal:1,slow:.5},{taste:1,culture:.5},{heal:1}],
+
+  // Q16 旅行中最让你崩溃的是？（新题）
+  // A景点不好看→culture期望高  B人太多→social低  C天气不好→自然依赖高  D超预算→计划性强  E交通延误→计划性强+heal低
+  [{culture:.5},{social:-1},{natural:.5},{plan:.5},{plan:.5,heal:-.5}],
+
+  // Q17 理想的旅行同伴是？（新题）
+  // A一个人→独处+治愈  B另一半→温暖+治愈  C好朋友→社交  D全家→社交+温暖  E旅途认识→社交+随性
+  [{slow:.5,heal:1},{warm:1,heal:.5},{social:1},{social:.5,warm:.5},{social:.5,plan:-.5}],
+
+  // Q18 到了新城市第一件事？（新题）
+  // A查攻略→计划  B瞎逛→随性+慢  C找吃的→美食  D咖啡馆感受节奏→慢+治愈  E找出片地方拍→社交+计划
+  [{plan:1},{plan:-.5,slow:1},{taste:1},{slow:1,heal:.5},{social:.5,plan:.5}],
+
+  // Q19 只能选一种体验？（新题）
+  // A日出日落→自然+治愈  B民俗活动→文化+社交  C当地馆子→美食+文化  D自然独处→自然+治愈+独处  E了解历史→文化
+  [{natural:1,heal:1},{culture:1,social:.5},{taste:1,culture:.5},{natural:1,heal:1,social:-.5},{culture:1}],
+
+  // Q20 提前多久做攻略？（新题）
+  // A一个月→极强计划  B一周→计划中等  C前一天→弱计划  D不做攻略→随性最强  E跟着别人→社交依赖
+  [{plan:2},{plan:1},{plan:-.5},{plan:-1,slow:1},{social:.5,plan:-.5}]
 ];
 
 const cities=[
@@ -480,12 +490,12 @@ const personalityRules=[
 ];
 
 // ── STATE ──
-let answers=new Array(15).fill(null),currentQ=0,questionStartTime=Date.now(),timePerQ=[],returnCount=0,confirmEnterTime=0;
+let answers=new Array(20).fill(null),currentQ=0,questionStartTime=Date.now(),timePerQ=[],returnCount=0,confirmEnterTime=0;
 
 // ── SCREENS ──
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
 function startQuiz(){
-  answers=new Array(15).fill(null);currentQ=0;questionStartTime=Date.now();timePerQ=[];returnCount=0;
+  answers=new Array(20).fill(null);currentQ=0;questionStartTime=Date.now();timePerQ=[];returnCount=0;
   analytics.trackStart(); // 埋点：开始答题
   renderQuestion();showScreen('quiz');
   // Prefetch photos for most-likely result cities in background
@@ -500,7 +510,7 @@ function renderQuestion(){
   const q=questions[currentQ];
   document.getElementById('q-num').textContent=`Q${currentQ+1}`;
   document.getElementById('q-text').textContent=q.text;
-  document.getElementById('progress-text').textContent=`第 ${currentQ+1} / 15 题`;
+  document.getElementById('progress-text').textContent=`第 ${currentQ+1} / 20 题`;
   const pct=Math.round(currentQ/15*100);
   document.getElementById('progress-pct').textContent=pct+'%';
   document.getElementById('progress-fill').style.width=pct+'%';
@@ -520,7 +530,7 @@ function selectOption(i){
   questionStartTime=Date.now();
   answers[currentQ]=i;
   document.querySelectorAll('.option-btn').forEach((b,idx)=>b.classList.toggle('selected',idx===i));
-  setTimeout(()=>{if(currentQ<14){currentQ++;renderQuestion();}else showConfirm();},300);
+  setTimeout(()=>{if(currentQ<19){currentQ++;renderQuestion();}else showConfirm();},300);
 }
 function prevQuestion(){if(currentQ>0){returnCount++;currentQ--;renderQuestion();}}
 
