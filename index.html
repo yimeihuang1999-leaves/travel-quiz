@@ -112,7 +112,9 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 .food-name{font-size:16px;font-weight:500;color:var(--text-dark)}
 .food-desc{font-size:13px;color:var(--text-light);margin-top:2px}
 .alt-cities{display:flex;gap:10px}
-.alt-city-card{flex:1;background:var(--card-bg);border:1px solid var(--beige);border-radius:14px;padding:14px;text-align:center}
+.alt-city-card{flex:1;background:var(--card-bg);border:1px solid var(--beige);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:all .15s}
+.alt-city-card:hover{border-color:var(--rose);transform:translateY(-2px);box-shadow:0 4px 16px rgba(212,165,165,.2)}
+.alt-city-card:active{transform:scale(.97)}
 .alt-city-icon{font-size:26px;margin-bottom:6px}
 .alt-city-name{font-size:14px;font-weight:500;color:var(--text-dark)}
 .alt-city-pct{font-size:13px;color:var(--rose);margin-top:2px}
@@ -123,6 +125,25 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 .btn-retry:hover{border-color:var(--rose);color:var(--rose)}
 .fix-entry{text-align:center;font-size:13px;color:var(--text-light);margin-top:8px;cursor:pointer}
 .fix-entry span{color:var(--rose);text-decoration:underline}
+
+/* 攻略卡片 */
+.guide-card{background:var(--card-bg);border:1px solid var(--beige);border-radius:16px;overflow:hidden}
+.guide-meta{display:flex;gap:0;border-bottom:1px solid var(--beige)}
+.guide-meta-item{flex:1;padding:12px 14px;text-align:center;border-right:1px solid var(--beige)}
+.guide-meta-item:last-child{border-right:none}
+.guide-meta-label{font-size:11px;color:var(--text-light);margin-bottom:4px;letter-spacing:.5px}
+.guide-meta-val{font-size:13px;color:var(--text-dark);font-weight:500;line-height:1.4}
+.guide-tips{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.guide-tip{font-size:13px;color:var(--text-mid);line-height:1.6}
+
+/* 小红书按钮 */
+.xhs-btn{display:flex;align-items:center;gap:14px;background:#fff1f0;border:1.5px solid #ffccc7;border-radius:14px;padding:14px 16px;text-decoration:none;transition:all .15s;cursor:pointer}
+.xhs-btn:hover{background:#ffe8e6;border-color:#ff9a8d;transform:translateY(-1px)}
+.xhs-icon{font-size:28px;flex-shrink:0}
+.xhs-text{flex:1}
+.xhs-title{font-size:15px;font-weight:500;color:#cc3333}
+.xhs-sub{font-size:13px;color:#e06060;margin-top:2px}
+.xhs-arrow{font-size:18px;color:#cc3333;flex-shrink:0}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text-dark);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(min-width:600px){.confirm-list{display:grid;grid-template-columns:repeat(2,1fr)}.result-header{height:360px}}
@@ -197,8 +218,8 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
   </div>
   <div class="result-body">
     <div class="confidence-warning" id="confidence-warning">⚠️ 你的答案有些矛盾，结果仅供参考——也可以点击下方重新测试</div>
-    <div id="alt-cities-section" class="result-section" style="display:none">
-      <div class="result-section-title">你可能也适合</div>
+    <div id="alt-cities-section" class="result-section">
+      <div class="result-section-title">相似的备选城市</div>
       <div class="alt-cities" id="alt-cities"></div>
     </div>
     <div class="result-section">
@@ -221,6 +242,26 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
       <div class="result-section-title">必吃一道菜</div>
       <div class="food-card" id="food-card"></div>
     </div>
+
+    <!-- 旅游攻略卡片 -->
+    <div class="result-section" id="guide-section">
+      <div class="result-section-title">出发前要知道</div>
+      <div class="guide-card" id="guide-card"></div>
+    </div>
+
+    <!-- 小红书直达 -->
+    <div class="result-section">
+      <div class="result-section-title">找更多攻略</div>
+      <a id="xhs-link" class="xhs-btn" target="_blank" rel="noopener">
+        <span class="xhs-icon">📕</span>
+        <div class="xhs-text">
+          <div class="xhs-title">小红书搜索攻略</div>
+          <div class="xhs-sub" id="xhs-keyword"></div>
+        </div>
+        <span class="xhs-arrow">→</span>
+      </a>
+    </div>
+
     <div class="share-area">
       <button class="btn-share" onclick="shareResult()">📤 @那个最该陪你去的人</button>
       <button class="btn-retry" onclick="restartQuiz()">🔄 重新测试一次</button>
@@ -337,140 +378,258 @@ const cities=[
     "你的选择里藏着一种「潮湿的浪漫」。你喜欢雨后的空气，喜欢莫奈的光影，喜欢一个人发呆。\n厦门就是为你这样的人设计的——它不赶时间，也不赶人。在厦门的海边，你可以理直气壮地什么都不做。",
     "偷偷告诉你一个秘密：选毛毛雨的人，90%都去了厦门，而且没有一个后悔。\n因为厦门懂你——懂你想躺平，懂你想吃好吃的，懂你想拍好看的照片。\n别犹豫了，你的灵魂已经在环岛路骑自行车了。"],
    itinerary:["Day1：环岛路骑行追日落，夜宿鼓浪屿附近","Day2：沙坡尾逛逛吃吃，找一家猫咪咖啡发呆","Day3：中山路扫货，顺路进厦大蹭校园氛围"],
-   food:"沙茶面",foodDesc:"鲜虾蛏子铺满，汤头浓郁带花生香",foodIcon:"🍜"},
+   food:"沙茶面",foodDesc:"鲜虾蛏子铺满，汤头浓郁带花生香",foodIcon:"🍜",guide:{"season": "3-5月 · 10-12月", "budget": "人均 500-800元/天", "tips": ["🚢 鼓浪屿提前网上购票，旺季船票很抢手", "🚲 环岛路骑行约2小时，租车30元/天", "🏫 厦大和南普陀免费，傍晚最美"], "xhs": "厦门旅游攻略"}},
   {name:"大理",icon:"🌿",natural:5,social:2,plan:5,slow:5,culture:3,heal:5,warm:3,taste:3,scene:"mountain",c1:"#3D8060",c2:"#6BAE8C",
    tag:"云隐者",
    analyses:["你的答案里满是自然，满是安静，满是一个人。\n你不是在逃，你只是想找一个允许你慢下来的地方。\n大理就是那里。洱海的蓝不会催你，苍山的风不问你去哪，白族老阿姐卖的玫瑰饼只要你三块钱。",
     "你喜欢绿+棕，你喜欢山峦云雾，你睡前回忆今天的美好。\n你是那种会在田间小路停下来拍一朵野花的人。大理早就为你留好了那朵花的位置。",
     "你是少数能读懂大理的人。不是网红大理，是真正的大理——洱海边喝普洱、苍山上看云的那种。\n你和大理之间，只差一张机票。"],
    itinerary:["Day1：洱海边骑行发呆，看日落到舍不得走","Day2：喜洲古镇探访，稻田里走走停停","Day3：苍山索道看云，下山找烤乳扇"],
-   food:"烤乳扇",foodDesc:"外焦里嫩，蘸着辣椒面，白族人的灵魂小吃",foodIcon:"🧀"},
+   food:"烤乳扇",foodDesc:"外焦里嫩，蘸着辣椒面，白族人的灵魂小吃",foodIcon:"🧀",guide:{"season": "4-6月 · 9-11月", "budget": "人均 300-500元/天", "tips": ["🚲 洱海骑行全程约130km，量力而行", "🎪 喜洲古镇离大理古城25km，包车方便", "☁️ 雨季(6-8月)苍山云雾最美"], "xhs": "大理旅游攻略"}},
   {name:"成都",icon:"🐼",natural:2,social:5,plan:3,slow:4,culture:4,heal:3,warm:3,taste:5,scene:"city",c1:"#A05A2A",c2:"#D4875A",
    tag:"碳水教父",
    analyses:["你喜欢聚会，你喜欢探店，你睡前刷美食攻略。\n恭喜你，成都是你命中注定的城市。\n在这里，吃饭是正事，喝茶是事业，打麻将是修行。成都不会让你无聊，因为这座城市比你更热爱生活。",
     "你的选择透露出一个信号：你爱人、爱热闹、爱吃。这三个词，成都全都有，而且是加强版。\n宽窄巷子的市井，锦里的烟火，IFS的繁华，成都把所有你想要的都塞进了一座城。",
     "我不打招呼直接说：你应该去成都。\n一锅红汤，一碗冒菜，一杯盖碗茶。成都会用美食告诉你什么叫活着真好。"],
    itinerary:["Day1：人民公园掏耳喝茶，感受真正的成都慢生活","Day2：太古里逛街拍照，晚上吃火锅局","Day3：早起去大熊猫基地，顺路品锅盔"],
-   food:"火锅",foodDesc:"红汤滚滚，毛肚鸭肠打底，一锅让你忘记回家",foodIcon:"🍲"},
+   food:"火锅",foodDesc:"红汤滚滚，毛肚鸭肠打底，一锅让你忘记回家",foodIcon:"🍲",guide:{"season": "3-5月 · 9-11月", "budget": "人均 400-700元/天", "tips": ["🐼 大熊猫基地建议7-9点入园，熊猫最活跃", "🫕 火锅人均80-150元，避开网红店排队地狱", "🚇 地铁发达，出行成本极低"], "xhs": "成都旅游攻略"}},
   {name:"青岛",icon:"⚓",natural:5,social:3,plan:3,slow:3,culture:2,heal:4,warm:2,taste:4,scene:"ocean",c1:"#1E5E9A",c2:"#4A90C4",
    tag:"海风追逐者",
    analyses:["你喜欢蓝+白，你想在大海边醒来，你会带一块当地的石头回家。青岛是你的。\n栈桥的礁石、八大关的绿荫、崂山的清泉，这座城市有海，有山，有啤酒，还有独特的德式建筑遗韵。",
     "你是那种会在海边坐上一下午只是看浪的人。青岛最懂你。这里的海不是表演给人看的，是真实存在于你面前的，可以踩的，可以闻的，可以让你发呆三小时的。",
     "去青岛吧。带上你那颗需要吹风的心。\n喝一扎散装青岛，嗦一把辣炒蛤蜊，坐在崂山顶上看整个黄海铺开在你脚下。"],
    itinerary:["Day1：栈桥-八大关漫步，欧式建筑穿越之旅","Day2：崂山景区徒步，太清宫打卡","Day3：啤酒博物馆+海鲜大排档，边喝边吹海风"],
-   food:"辣炒蛤蜊",foodDesc:"鲜辣爽口，就着冰啤酒，青岛夜宵标配",foodIcon:"🦪"},
+   food:"辣炒蛤蜊",foodDesc:"鲜辣爽口，就着冰啤酒，青岛夜宵标配",foodIcon:"🦪",guide:{"season": "5-10月", "budget": "人均 400-600元/天", "tips": ["🍺 劈柴院喝散装青岛最正宗，价格实惠", "🏖️ 金沙滩在黄岛区，需坐轮渡或绕行", "🦑 海鲜大排档在团岛，当地人才知道"], "xhs": "青岛旅游攻略"}},
   {name:"西安",icon:"🏯",natural:2,social:3,plan:2,slow:2,culture:5,heal:2,warm:2,taste:5,scene:"ancient",c1:"#8A5A2A",c2:"#C4925A",
    tag:"时光猎人",
    analyses:["你对《清明上河图》比对莫奈更感兴趣，你想偶遇一场当地传统节日，你的相册里多是建筑和街景。\n你是一个时间旅行者，而西安是最好的时光机。城墙内外，秦砖汉瓦，每一步都踩在历史上。",
     "你不是普通游客，你是那种会在兵马俑面前站两小时只是在想「这些人是谁」的人。\n西安会让你满意——这里的历史不是摆出来看的，是渗透在肉夹馍里的，飘在回民街香气里的。",
     "西安适合你，因为你需要一座城市和你谈一谈过去。\n十三朝古都，盛唐长安，这里有中国最厚重的那层底色。去走走，去看看，去吃吃。"],
    itinerary:["Day1：兵马俑半天，下午华清宫沉浸式历史","Day2：城墙骑行，夜宿回民街大快朵颐","Day3：大唐不夜城夜游，顺路逛永兴坊"],
-   food:"肉夹馍",foodDesc:"白吉馍酥脆，腊汁肉鲜香，西安街头最长情的早饭",foodIcon:"🥙"},
+   food:"肉夹馍",foodDesc:"白吉馍酥脆，腊汁肉鲜香，西安街头最长情的早饭",foodIcon:"🥙",guide:{"season": "3-5月 · 9-11月", "budget": "人均 400-600元/天", "tips": ["🏺 兵马俑必须提前网上购票，现场票难买", "🌙 大唐不夜城晚上8点后人最多最热闹", "🍖 回民街烤肉找人少的小巷子，更好吃"], "xhs": "西安旅游攻略"}},
   {name:"上海",icon:"🌆",natural:1,social:5,plan:1,slow:1,culture:4,heal:1,warm:3,taste:5,scene:"city",c1:"#4A5A70",c2:"#7E8DA8",
    tag:"都市游牧者",
    analyses:["你选择地铁穿梭，你喜欢繁华商业街，你的周末是聚会探店暴走。上海是你的主场。\n这里快得让你兴奋，多元得让你着迷，精致得让你忍不住拍照。你和上海之间有一种天然的默契。",
     "你是那种走进上海会说「对，就是这里」的人。外滩的建筑、新天地的精致、安福路的文艺、弄堂里的市井，上海把所有你想要的体验都塞进了一个坐标里。",
     "上海不是最好玩的城市，但它是最「懂你」的城市。\n如果你觉得别的地方有点无聊，来上海。这里永远有你没见过的东西。"],
    itinerary:["Day1：外滩-南京路-新天地，经典路线走一遍","Day2：徐汇区文艺漫游，武康路+安福路+西岸","Day3：豫园-城隍庙扫货，晚上陆家嘴夜景收尾"],
-   food:"生煎包",foodDesc:"底脆皮薄，汤汁迸发，一口下去才懂上海",foodIcon:"🥟"},
+   food:"生煎包",foodDesc:"底脆皮薄，汤汁迸发，一口下去才懂上海",foodIcon:"🥟",guide:{"season": "3-5月 · 9-11月", "budget": "人均 600-1200元/天", "tips": ["🏙️ 外滩对岸陆家嘴看夜景角度更好", "🛍️ 安福路武康路周末人多，工作日去更舒适", "🚇 地铁覆盖全面，出行首选"], "xhs": "上海旅游攻略"}},
   {name:"桂林",icon:"⛰️",natural:5,social:2,plan:4,slow:4,culture:2,heal:4,warm:4,taste:2,scene:"mountain",c1:"#4A7A42",c2:"#7BAA72",
    tag:"山水画中人",
    analyses:["你想在窗外看到山峦云雾，你愿意一个人随便逛，你喜欢绿+棕的配色。\n桂林就是你脑子里那幅山水画的真实版本。漓江的水，阳朔的田，喀斯特地貌的峰林，全是你梦里想去的地方。",
     "如果你觉得中国的风景应该是那种山清水秀、如诗如画的感觉，桂林会让你觉得：原来真的存在。\n遇龙河竹筏漂流，十里画廊骑行，这里是纸上走出来的仙境。",
     "你不需要人山人海，你只需要桂林。\n一片田，一条江，一座山，一个人，这就是你要的旅行。"],
    itinerary:["Day1：漓江游船，山水全景尽收眼底","Day2：阳朔骑行十里画廊，遇龙河竹筏漂流","Day3：西街溜达，找找文艺小店"],
-   food:"桂林米粉",foodDesc:"汤底清甜，卤香扑鼻，一碗下肚神清气爽",foodIcon:"🍝"},
+   food:"桂林米粉",foodDesc:"汤底清甜，卤香扑鼻，一碗下肚神清气爽",foodIcon:"🍝",guide:{"season": "3-5月 · 9-11月", "budget": "人均 300-500元/天", "tips": ["🛶 漓江游船从桂林到阳朔约4小时，提前订票", "🚲 阳朔骑行遇龙河沿线是精华", "🌧️ 雨季山水朦胧最美，不要怕下雨"], "xhs": "桂林旅游攻略"}},
   {name:"拉萨",icon:"🏔️",natural:5,social:1,plan:3,slow:3,culture:5,heal:4,warm:1,taste:1,scene:"plateau",c1:"#6A5A9A",c2:"#9E88CC",
    tag:"灵魂避风港",
    analyses:["你的选择里有一种「向往远处」的信号。你想去最不像城市的地方，你想一个人待在只有自己的美景里。\n拉萨，3600米的高原，离天最近的地方，是那些内心需要被清空一次的人的去处。",
     "你对这次旅行的需求不是放松，而是重新开始。\n拉萨会给你这个机会。布达拉宫的庄严，大昭寺的香烟，八廓街的转经人，这里有一种无法解释的宁静会慢慢渗进你。",
     "去一次拉萨，你会用很久去消化那段时间里你想明白的事。\n这不是一趟旅行，这是一次对话——你和自己的对话。"],
    itinerary:["Day1：适应高原，布达拉宫广场远观，大昭寺朝圣","Day2：八廓街转经，色拉寺辩经，藏餐馆品藏面","Day3：羊卓雍错一日游，蓝色圣湖震撼人心"],
-   food:"藏面",foodDesc:"手工拉制，牛肉汤底温暖，高原早晨的第一口热气",foodIcon:"🍜"},
+   food:"藏面",foodDesc:"手工拉制，牛肉汤底温暖，高原早晨的第一口热气",foodIcon:"🍜",guide:{"season": "5-10月（避开冬季）", "budget": "人均 400-700元/天", "tips": ["✈️ 抵达后前两天不要剧烈运动，充分适应高原", "🛐 大昭寺门票免费，建议早上8点前进入", "🎟️ 布达拉宫需提前预约，每日限流"], "xhs": "拉萨旅游攻略"}},
   {name:"长沙",icon:"🌶️",natural:1,social:4,plan:2,slow:3,culture:2,heal:3,warm:4,taste:5,scene:"city",c1:"#A03A2E",c2:"#D4665A",
    tag:"烟火诗人",
    analyses:["你喜欢热闹，你爱美食，你的周末离不开探店。\n长沙是你的美食圣地。文和友、茶颜悦色、炸神仙、臭豆腐、口味虾，这座城市的美食密度让每一个吃货都找不到下班的理由。",
     "你需要一座会让你兴奋起来的城市。长沙就是。这里的夜生活从晚上10点才刚刚开始，橘子洲头的日出和超级文和友的宵夜，都是长沙给你的惊喜。",
     "长沙是被严重低估的宝藏城市。年轻、好吃、有劲儿。\n去了你会后悔没早去。"],
    itinerary:["Day1：岳麓书院+橘子洲，上午文化下午发呆","Day2：太平老街扫街，夜宵文和友多吃几样","Day3：湘江边骑行，顺路茶颜悦色每隔100米喝一杯"],
-   food:"口味虾",foodDesc:"麻辣鲜香，一口接一口，停不下来是真的",foodIcon:"🦞"},
+   food:"口味虾",foodDesc:"麻辣鲜香，一口接一口，停不下来是真的",foodIcon:"🦞",guide:{"season": "3-5月 · 9-11月", "budget": "人均 300-500元/天", "tips": ["🧋 茶颜悦色排队正常现象，建议错峰", "🌶️ 口味虾在宵夜场最正宗，晚上10点后最热闹", "🏔️ 岳麓山爬山免费，搭配橘子洲1天搞定"], "xhs": "长沙旅游攻略"}},
   {name:"威海",icon:"🌊",natural:4,social:2,plan:4,slow:4,culture:2,heal:2,warm:3,taste:3,scene:"ocean",c1:"#2A6A8A",c2:"#5BA0BE",
    tag:"海风隐居者",
    analyses:["你想要一片没有人群的海，你想一个人慢慢走，你不需要打卡景点。\n威海是那种「去了才知道」的城市。洁净的蓝，干净的街，没有厦门的拥挤，没有青岛的人潮，只有海和你。",
     "你需要的不是热闹，你需要的是真正的休息。威海会给你。荣成天鹅湖、刘公岛的历史静默、石岛的海边清晨，这里的慢是真实的慢。",
     "威海就像一个被低估的老朋友——安静，可靠，让你越待越不想走。"],
    itinerary:["Day1：国际海水浴场漫步，海边咖啡馆发呆","Day2：刘公岛轮渡，感受甲午海战历史","Day3：荣成天鹅湖观鸟，返程前吃一顿海鲜"],
-   food:"海胆刺身",foodDesc:"鲜甜微苦，入口即化，威海最骄傲的一道菜",foodIcon:"🍣"},
+   food:"海胆刺身",foodDesc:"鲜甜微苦，入口即化，威海最骄傲的一道菜",foodIcon:"🍣",guide:{"season": "6-9月", "budget": "人均 300-500元/天", "tips": ["🦢 荣成天鹅湖观鸟季在11月至次年3月", "⛴️ 刘公岛轮渡+门票约90元，留半天时间", "🦞 海鲜市场买海鲜自己加工最实惠"], "xhs": "威海旅游攻略"}},
   {name:"泉州",icon:"🏮",natural:3,social:3,plan:4,slow:4,culture:5,heal:3,warm:4,taste:5,scene:"ancient",c1:"#8A4E2A",c2:"#C4805A",
    tag:"烟火诗人",
    analyses:["你对文化的兴趣是真实的，你喜欢古城小巷，你愿意带手工艺品回家。\n泉州是中国最被低估的古城，没有之一。南宋古街、开元寺、蟳埔女的头花，这座城市的每一个角落都有一个故事。",
     "泉州不是网红城市，所以去泉州的人，都是真的爱旅行的人。闽南文化的根就在这里，洛阳桥的古老，崇武古城的海风，让你感觉时间从未流走。",
     "你去泉州，会发现一座真实活着的古城。不是博物馆，是烟火气。\n一碗肉燕，一盘海蛎煎，配上骑楼下的午后，足够了。"],
    itinerary:["Day1：西街-开元寺漫步，骑楼下喝茶","Day2：蟳埔村簪花围体验，感受海洋文明","Day3：崇武古城海边，顺路品惠安咸饭"],
-   food:"海蛎煎",foodDesc:"蚵仔鲜嫩，蛋液金黄，闽南最家常的一道幸福",foodIcon:"🍳"},
+   food:"海蛎煎",foodDesc:"蚵仔鲜嫩，蛋液金黄，闽南最家常的一道幸福",foodIcon:"🍳",guide:{"season": "3-5月 · 10-12月", "budget": "人均 300-500元/天", "tips": ["🏮 开元寺免费，建议停留2小时", "🌸 蟳埔村簪花体验约50-100元，超出片", "🍳 海蛎煎在西街周边小店找，别去网红店"], "xhs": "泉州旅游攻略"}},
   {name:"腾冲",icon:"🌋",natural:5,social:1,plan:5,slow:5,culture:4,heal:5,warm:2,taste:2,scene:"forest",c1:"#4A7A3A",c2:"#82A86A",
    tag:"云隐者",
    analyses:["你几乎所有的选择都在说：给我一个安静的、自然的、可以慢下来的地方。\n腾冲是中国最适合消失一段时间的城市。热海温泉、北海湿地、银杏村的金黄，这里的每一个角落都在告诉你：不用赶，不用急。",
     "你需要一次真正的断联之旅。腾冲离城市足够远，离自然足够近。\n火山地热的奇景，保山翡翠的温润，少数民族的炊烟，这里有你在都市里找不到的时间感。",
     "腾冲是那种去了就不想走的地方。\n因为那里的时间，比任何地方都流得慢一点。"],
    itinerary:["Day1：热海地热公园，泡温泉泡到忘记时间","Day2：北海湿地漂浮草甸，候鸟季最治愈","Day3：和顺古镇漫步，翡翠市场淘淘石头"],
-   food:"大救驾",foodDesc:"炒饵块配腊肉，香糯有嚼劲，腾冲人的家常饭",foodIcon:"🍛"},
+   food:"大救驾",foodDesc:"炒饵块配腊肉，香糯有嚼劲，腾冲人的家常饭",foodIcon:"🍛",guide:{"season": "4-10月（银杏季10-11月最美）", "budget": "人均 300-500元/天", "tips": ["♨️ 热海地热景区值得去，大滚锅最震撼", "🌿 北海湿地草甸漂浮感很治愈，雨季更壮观", "🚗 景点分散，建议包车，约200元/天"], "xhs": "腾冲旅游攻略"}},
   {name:"杭州",icon:"🏛️",natural:4,social:3,plan:3,slow:4,culture:4,heal:4,warm:4,taste:4,scene:"ancient",c1:"#4A7868",c2:"#7BA896",
    tag:"山河拾光者",
    analyses:["你的选择很平衡——喜欢自然，也接受人文；想慢下来，也不排斥探索。\n杭州是最懂平衡的城市。西湖的诗意，灵隐的禅意，河坊街的烟火，这里给你所有你想要的，还不用做选择。",
     "你是那种对「美」很敏感的人，无论是风景的美还是食物的美。\n杭州的美是刚刚好的美，不张扬，不做作。断桥不是最壮观的桥，但它是最有故事的。",
     "去杭州吧，带上你那颗慢下来的心。\n雨中西湖，苏堤春晓，河坊街上一碗片儿川，这是属于你的节奏。"],
    itinerary:["Day1：西湖环湖漫步，断桥残雪+雷峰塔","Day2：灵隐寺祈福，飞来峰看石刻，下午龙井村品茶","Day3：南宋御街-河坊街，小河直街市井收尾"],
-   food:"东坡肉",foodDesc:"肥而不腻，入口即化，苏轼留给杭州的最美礼物",foodIcon:"🍖"},
+   food:"东坡肉",foodDesc:"肥而不腻，入口即化，苏轼留给杭州的最美礼物",foodIcon:"🍖",guide:{"season": "3-4月（春）· 10-11月（秋）", "budget": "人均 400-700元/天", "tips": ["☕ 龙井茶园在梅家坞，4月采茶季最美", "🌊 西湖免费，雨中西湖是隐藏彩蛋", "🛥️ 西湖游船100元左右，可以讲价"], "xhs": "杭州旅游攻略"}},
   {name:"苏州",icon:"🌸",natural:3,social:2,plan:4,slow:4,culture:5,heal:4,warm:4,taste:4,scene:"ancient",c1:"#6A5A90",c2:"#9B8EC0",
    tag:"烟火诗人",
    analyses:["你是真正欣赏细腻之美的人。你选莫奈不选梵高，你带手工艺品而不是冰箱贴，你想偶遇古街小店。\n苏州是为你定制的。每一座园林都是一首诗，每一条小巷都有故事，每一碗面都值得认真吃。",
     "你需要的不是刺激，你需要的是精致。苏州的精致是骨子里的，拙政园的假山、周庄的倒影、平江路的青石板，这里的美是可以细细品的。",
     "去苏州，放慢你的脚步。\n这座城市的美，是需要你停下来，才看得见的。"],
    itinerary:["Day1：拙政园+狮子林，园林精华走一遍","Day2：平江路慢逛，买苏绣纪念品，喝碗藏书羊肉面","Day3：周庄古镇一日游，水乡倒影最治愈"],
-   food:"苏式汤面",foodDesc:"宽汤细面，浇头丰盛，每一碗都是苏州人的清晨仪式",foodIcon:"🍜"},
+   food:"苏式汤面",foodDesc:"宽汤细面，浇头丰盛，每一碗都是苏州人的清晨仪式",foodIcon:"🍜",guide:{"season": "3-5月 · 9-11月", "budget": "人均 400-700元/天", "tips": ["🌷 拙政园旺季建议早8点入园，人少景美", "🚤 平江路夜游最美，白天人挤不好逛", "🚌 周庄古镇在昆山，从苏州坐客运约1小时"], "xhs": "苏州旅游攻略"}},
   {name:"重庆",icon:"🌉",natural:3,social:5,plan:1,slow:2,culture:3,heal:2,warm:4,taste:5,scene:"city",c1:"#A03A2A",c2:"#D46E5A",
    tag:"都市游牧者",
    analyses:["你选择随便逛，你喜欢聚会探店，你的周末有点累但也有点爱。\n重庆是你的那种城市——它不让你无聊，它让你兴奋，它让你不断发现新的东西。\n立体迷宫般的城市结构，3D感的山城地景，让重庆永远有惊喜等着你。",
     "重庆适合那些不怕迷路的人。洪崖洞的层叠霓虹，磁器口的烟火喧嚣，千厮门大桥下的江边，这座城市在每一个转角给你一个新的世界。",
     "重庆是中国最会给人带来惊喜的城市。\n去之前你不信，去了你就懂了。"],
    itinerary:["Day1：洪崖洞夜景，千厮门大桥走走，嘉陵江边吹风","Day2：磁器口古镇，顺坡下山吃串串","Day3：解放碑步行街，来福士观景台俯瞰两江交汇"],
-   food:"串串香",foodDesc:"竹签涮涮，麻辣鲜香，重庆人的一日三餐外加宵夜",foodIcon:"🍢"},
+   food:"串串香",foodDesc:"竹签涮涮，麻辣鲜香，重庆人的一日三餐外加宵夜",foodIcon:"🍢",guide:{"season": "3-5月 · 9-11月", "budget": "人均 400-600元/天", "tips": ["🌃 洪崖洞晚上8点后最好看，白天基本没啥", "🚠 长江索道体验城市交通感，10元/次", "🍢 串串香人均50-80元，磁器口附近最正宗"], "xhs": "重庆旅游攻略"}},
   {name:"广州",icon:"🌺",natural:1,social:4,plan:2,slow:3,culture:3,heal:2,warm:5,taste:5,scene:"city",c1:"#A06A1A",c2:"#D4A04A",
    tag:"碳水教父",
    analyses:["你爱吃，你爱热闹，你喜欢温暖的气候。广州是天选之地。\n这座城市把饮食提升到了艺术的高度，一盅两件是早茶，烧腊白切鸡是午饭，炒河粉是宵夜，广州人对吃的认真你会佩服。",
     "你需要一座不把你当外人的城市。广州就是。这里温暖、包容，永远在聊吃的。",
     "去广州，就为了吃。\n从早茶开始，到宵夜结束，中间再插上几顿，你会发现一天24小时根本不够用。"],
    itinerary:["Day1：陶陶居喝早茶，上下九步行街闲逛","Day2：北京路骑行，永庆坊感受西关风情","Day3：荔湾广场，越秀公园，晚上大排档宵夜"],
-   food:"虾饺",foodDesc:"皮薄馅鲜，晶莹剔透，广州茶楼永恒的镇场之宝",foodIcon:"🥟"},
+   food:"虾饺",foodDesc:"皮薄馅鲜，晶莹剔透，广州茶楼永恒的镇场之宝",foodIcon:"🥟",guide:{"season": "10月-次年4月（避开夏季酷热）", "budget": "人均 400-700元/天", "tips": ["🍵 早茶选老字号：陶陶居、莲香楼、点都德", "🌺 永庆坊免费逛，岭南建筑最出片", "🌙 宵夜去天河棠下，当地人都在这里"], "xhs": "广州旅游攻略"}},
   {name:"丽江",icon:"🌙",natural:4,social:3,plan:5,slow:5,culture:4,heal:5,warm:3,taste:3,scene:"ancient",c1:"#8A5A3A",c2:"#BC8A6A",
    tag:"时光猎人",
    analyses:["你对古城、对慢、对治愈有强烈的需求。你愿意放慢脚步，你想带手工艺品回家，你喜欢在画里待着。\n丽江古城就是那幅画，纳西族的传统、玉龙雪山的白、泸沽湖的蓝，都是你来这里的理由。",
     "丽江适合那些心里有点什么、说不清楚的人。\n古城的石板路、四方街的音乐、束河的宁静，这座城市会帮你把那点说不清楚的东西慢慢说清楚。",
     "去丽江，找一家客栈住下来，什么也不做。\n你会发现，什么也不做，才是最高级的旅行。"],
    itinerary:["Day1：古城四方街漫步，纳西烤鱼+米酒","Day2：玉龙雪山索道，蓝月谷发呆","Day3：束河古镇安静骑行"],
-   food:"纳西烤鱼",foodDesc:"柴火烤制，配上米酒，古城夜晚的最佳搭档",foodIcon:"🐟"},
+   food:"纳西烤鱼",foodDesc:"柴火烤制，配上米酒，古城夜晚的最佳搭档",foodIcon:"🐟",guide:{"season": "3-5月 · 9-10月", "budget": "人均 400-700元/天", "tips": ["🏔️ 玉龙雪山需提前预约，大索道人最多", "🌙 古城酒吧街夜里很吵，住宿选外围安静", "🚗 束河古镇步行可达，比四方街更安静"], "xhs": "丽江旅游攻略"}},
   {name:"敦煌",icon:"🐪",natural:5,social:1,plan:2,slow:2,culture:5,heal:2,warm:3,taste:1,scene:"desert",c1:"#8A6A2A",c2:"#C4A05A",
    tag:"时光猎人",
    analyses:["你对历史的热情，你对壮阔自然的向往，你喜欢一个人的美景，都在指向同一个地方：敦煌。\n莫高窟的壁画会让你沉默，鸣沙山的沙漠会让你渺小，月牙泉的奇迹会让你相信这个世界还有惊喜。",
     "你是那种会在莫高窟面前忘记时间的人。\n1000年前的颜料还在，1000年前的故事还在，敦煌是中国历史的最高密度地带之一。你值得这次朝圣。",
     "去敦煌，骑骆驼进沙漠，看日落，看星空。\n在茫茫黄沙里，你会想清楚很多事。"],
    itinerary:["Day1：莫高窟预约参观，博物馆深度了解历史","Day2：鸣沙山月牙泉，骑骆驼看日落","Day3：玉门关雅丹地貌，外星地景震撼体验"],
-   food:"驴肉黄面",foodDesc:"面条劲道，驴肉鲜香，敦煌人每天都要吃的一碗",foodIcon:"🍜"},
+   food:"驴肉黄面",foodDesc:"面条劲道，驴肉鲜香，敦煌人每天都要吃的一碗",foodIcon:"🍜",guide:{"season": "5-10月（避开寒冬）", "budget": "人均 400-600元/天", "tips": ["🎟️ 莫高窟必须提前网上预约，分A/B票", "🐪 鸣沙山骑骆驼约100元，日落前一小时最美", "⭐ 敦煌夜晚星空绝美，远离市区更清晰"], "xhs": "敦煌旅游攻略"}},
   {name:"哈尔滨",icon:"❄️",natural:3,social:3,plan:2,slow:2,culture:2,heal:2,warm:1,taste:3,scene:"snow",c1:"#3A5A90",c2:"#6894C4",
    tag:"冰雪漫游者",
    analyses:["你不怕冷，你喜欢不一样的体验，你对这个世界抱有好奇。\n哈尔滨是中国最不像中国的城市。俄式建筑、东正教堂、冬天的冰雕，这里有你没见过的中国。",
     "哈尔滨适合那些在城市里待腻了的人。-30℃的空气、中央大街的马迭尔冰棍、冰雪大世界的灯光，这些体验你在任何其他城市都找不到。",
     "去哈尔滨，感受极寒之地的热情。\n当地人越冷越开心，烤串烧烤越吃越爽，冰城的豪爽你会喜欢。"],
    itinerary:["Day1：中央大街漫步，圣索菲亚教堂，马迭尔冰棍打卡","Day2：冰雪大世界，夜间灯光最美","Day3：太阳岛公园，松花江滑雪，烤串宵夜收尾"],
-   food:"锅包肉",foodDesc:"酸甜酥脆，外焦里嫩，东北餐桌最抢手的那道菜",foodIcon:"🍖"},
+   food:"锅包肉",foodDesc:"酸甜酥脆，外焦里嫩，东北餐桌最抢手的那道菜",foodIcon:"🍖",guide:{"season": "12月-次年2月（冰雪季）· 夏季也不错", "budget": "人均 400-600元/天", "tips": ["❄️ 冰雪大世界晚上灯光最美，白天相对普通", "🍦 中央大街马迭尔冰棍是必打卡，-20℃也要吃", "🧥 室内外温差极大，洋葱穿衣法必须执行"], "xhs": "哈尔滨旅游攻略"}},
   {name:"三亚",icon:"🌴",natural:5,social:3,plan:4,slow:4,culture:1,heal:5,warm:5,taste:4,scene:"ocean",c1:"#2A8878",c2:"#5BB8A8",
    tag:"潮汐捕手",
    analyses:["你想要温暖，你想要大海，你想要彻底放松。三亚是你现在最需要的地方。\n亚龙湾的蓝，天涯海角的风，蜈支洲岛的珊瑚，这里的阳光会晒走你所有的疲惫。",
     "你需要一次真正的度假，不是旅行，是度假。三亚是中国最接近度假定义的城市。\n躺着就是旅行，喝椰子就是文化，看日落就是艺术。",
     "去三亚，什么都不用做，就是晒太阳。\n那是你的假期应该有的样子。"],
    itinerary:["Day1：亚龙湾或大东海，沙滩日落走走停停","Day2：蜈支洲岛浮潜，珊瑚鱼群近在眼前","Day3：三亚湾椰梦长廊，海鲜大排档收尾"],
-   food:"椰子鸡",foodDesc:"清甜鲜嫩，椰香扑鼻，三亚人招待贵客的头牌汤锅",foodIcon:"🥥"}
+   food:"椰子鸡",foodDesc:"清甜鲜嫩，椰香扑鼻，三亚人招待贵客的头牌汤锅",foodIcon:"🥥",guide:{"season": "11月-次年4月（避开酷热台风季）", "budget": "人均 600-1200元/天", "tips": ["🤿 蜈支洲岛浮潜最佳，需提前订票", "🏖️ 大东海比亚龙湾人少价格低，性价比更高", "🌅 天涯海角日出很美，建议5:30前到"], "xhs": "三亚旅游攻略"}},
+
+  // ── 新增10城 ──
+  {name:"北京",icon:"🏛️",natural:2,social:4,plan:2,slow:2,culture:5,heal:2,warm:2,taste:4,scene:"ancient",c1:"#6A3A8A",c2:"#9B6AC0",
+   tag:"时光猎人",
+   analyses:["你对历史的兴趣是真实的，不是装出来的。\n北京是中国历史密度最高的城市——紫禁城的每一块砖，胡同里的每一座四合院，都在等一个真正愿意停下来的人。\n而你，就是那个人。",
+    "你的相册里多是建筑和街景，你想偶遇传统节日，你愿意在清明上河图里待一整天。\n北京为你而建。从故宫到798，从南锣鼓巷到天坛，这座城市的层次深得你一辈子都挖不完。",
+    "去北京，不是去打卡，是去读一本书。\n这本书叫中国，北京是它最厚的那一章。"],
+   itinerary:["Day1：故宫+景山公园俯瞰全景，傍晚南锣鼓巷溜达","Day2：天坛+前门大栅栏，夜宿胡同四合院","Day3：颐和园半天，下午798艺术区，反差感极强"],
+   food:"炸酱面",foodDesc:"手擀面配六种菜码，老北京人的一碗乡愁",foodIcon:"🍜",
+   guide:{"season":"3-5月·9-11月（避开酷热夏季和沙尘春季）","budget":"人均 500-900元/天","tips":["🎟️ 故宫网上预约抢票，旺季需提前1周","🛺 胡同游电动三轮100-200元，比瞎逛有意思","🌃 什刹海酒吧街夜晚热闹，南锣鼓巷白天更适合逛"],"xhs":"北京旅游攻略"}},
+
+  {name:"黄山",icon:"🌨️",natural:5,social:1,plan:3,slow:3,culture:4,heal:5,warm:2,taste:2,scene:"mountain",c1:"#5A7A8A",c2:"#8AAABB",
+   tag:"山河拾光者",
+   analyses:["你选了薄雾弥漫，选了霍珀的海边房间，选了只有自己的美景。\n你需要的不是热闹，是震撼。\n黄山会给你。云海翻涌的那一刻，你会觉得所有的爬山都值了。",
+    "你是那种能在一块奇石前发呆二十分钟的人。黄山是为你准备的——迎客松、飞来石、光明顶，每一处都是画。\n最重要的是，云海是随机的，你永远不知道明天会看到什么。",
+    "去黄山吧，不要怕爬山。\n那些汗水换来的，是站在云端往下看的时候，那种「世界是我的」的感觉。"],
+   itinerary:["Day1：下午抵达，入住山脚民宿，休整备战","Day2：全天登山，前山上后山下，看日落云海","Day3：清晨看日出，下山后顺访宏村古镇"],
+   food:"毛豆腐",foodDesc:"徽州特产，外焦里嫩，蘸辣椒酱一口鲜掉眉毛",foodIcon:"🧈",
+   guide:{"season":"3-5月·9-11月（云海最多），冬天雪景也绝美","budget":"人均 500-800元/天（山上住宿贵）","tips":["🎟️ 旺季门票+缆车需提前网上购买","⛺ 山顶宾馆提前1个月以上预订，价格贵但值","🌫️ 云海是随机的，多留一天概率更大"],"xhs":"黄山旅游攻略"}},
+
+  {name:"张家界",icon:"🗻",natural:5,social:2,plan:3,slow:3,culture:2,heal:4,warm:3,taste:2,scene:"mountain",c1:"#2A5A3A",c2:"#4A8A5A",
+   tag:"山河拾光者",
+   analyses:["阿凡达的潘多拉星球，就是从张家界取的景。\n你选了绿+棕，选了山峦云雾，选了自然风光——你的审美和詹姆斯·卡梅隆一样。\n去张家界，看看那些悬浮在云端的石柱，你会明白「奇」这个字。",
+    "你是那种真的愿意爬山的人，而不只是坐缆车看一眼。张家界正好——这里有百龙天梯，有玻璃桥，有徒步栈道，适合你这种既想看美景又想有点挑战的人。",
+    "张家界是中国最不像中国的自然景观。\n去之前你可能以为只是山，去了之后你才明白什么叫「鬼斧神工」。"],
+   itinerary:["Day1：张家界国家森林公园，乾坤柱+黄狮寨","Day2：天门山玻璃栈道，挑战恐高极限","Day3：袁家界+哈利路亚山，阿凡达取景地打卡"],
+   food:"土匪猪蹄",foodDesc:"卤制软糯，辣香下饭，武陵山区的豪爽滋味",foodIcon:"🍖",
+   guide:{"season":"4-5月·9-10月（云雾最多）","budget":"人均 400-600元/天","tips":["🎟️ 景区通票约258元，有效期4天，值","🚡 百龙天梯是世界最高室外电梯，体验感很强","🌧️ 雨后云雾最美，不要只晴天才去"],"xhs":"张家界旅游攻略"}},
+
+  {name:"南京",icon:"🏮",natural:2,social:4,plan:2,slow:3,culture:5,heal:3,warm:3,taste:4,scene:"ancient",c1:"#7A3A3A",c2:"#B06060",
+   tag:"时光猎人",
+   analyses:["你对文化的兴趣里有一种「沉重感」——你不只想看热闹，你想感受历史的重量。\n南京就是这样的城市。它比任何地方都更懂「沧桑」这两个字。\n中山陵、夫子庙、秦淮河，每一处都有故事等你去读。",
+    "你喜欢古城小巷，你愿意带手工艺品回家，你睡前回忆今天的美好。\n南京的美是有点苦涩的那种——因为你知道这里发生过什么，你才会更珍惜眼前的烟火气。",
+    "去南京，吃一碗鸭血粉丝，坐在夫子庙看秦淮河上的灯，然后去玄武湖边发呆。\n这座城市不会让你轻松，但会让你深刻。"],
+   itinerary:["Day1：中山陵+明孝陵，在历史里走半天","Day2：夫子庙+老门东+秦淮河夜游","Day3：玄武湖骑行，下午先锋书店文艺收尾"],
+   food:"鸭血粉丝汤",foodDesc:"汤底浓香，鸭血嫩滑，南京人一天可以吃三顿",foodIcon:"🍜",
+   guide:{"season":"3-5月（樱花+梧桐）·9-11月","budget":"人均 350-600元/天","tips":["🌸 玄武湖和鸡鸣寺樱花约3-4月，美到窒息","🦆 鸭血粉丝汤找老门东周边小店，别去景区门口","🎭 夫子庙白天逛街晚上看灯，两种感觉都要体验"],"xhs":"南京旅游攻略"}},
+
+  {name:"昆明",icon:"🌸",natural:3,social:3,plan:3,slow:4,culture:3,heal:4,warm:4,taste:4,scene:"forest",c1:"#5A7A3A",c2:"#8AAA5A",
+   tag:"山河拾光者",
+   analyses:["你喜欢多云凉爽，你喜欢水果酸奶碗，你想要窗外的山峦云雾。\n昆明是你的——它把四季都调成了春天，让你永远不用担心太热或太冷。\n石林的奇景、滇池的辽阔、大观楼的诗意，昆明的节奏和你完全合拍。",
+    "昆明是个被低估的城市。大多数人只是把它当做去丽江、大理的中转站。\n但真正停下来看，你会发现昆明有自己的骄傲——翠湖的海鸥、老街的咖啡、云南菜的丰富程度，哪一样都值得你多待两天。",
+    "去昆明，什么也不用做，就是晒太阳。\n这里的阳光是有重量的，晒一下午，你会觉得自己被治愈了。"],
+   itinerary:["Day1：翠湖公园投喂海鸥，老街咖啡馆发呆","Day2：石林地质奇观，世界自然遗产打卡","Day3：大观楼+滇池骑行，云南野生菌火锅收尾"],
+   food:"过桥米线",foodDesc:"汤底滚烫，食材丰盛，云南人的仪式感早午餐",foodIcon:"🍜",
+   guide:{"season":"全年皆宜（四季如春）·3-4月樱花烂漫","budget":"人均 300-500元/天","tips":["🌺 圆通山樱花3-4月免费看，比专程去武汉划算","🍄 野生菌火锅6-9月最肥美，价格会贵一点","☀️ 昆明紫外线极强，防晒必须认真对待"],"xhs":"昆明旅游攻略"}},
+
+  {name:"呼伦贝尔",icon:"🐎",natural:5,social:1,plan:2,slow:4,culture:3,heal:5,warm:1,taste:2,scene:"forest",c1:"#3A6A2A",c2:"#6A9A4A",
+   tag:"云隐者",
+   analyses:["你的选择里有一种对「辽阔」的渴望。你想逃离城市，你想一个人，你想要只有自己的美景。\n呼伦贝尔草原是中国最接近「无边界感」的地方。骑马奔跑的那一刻，你会明白什么叫做自由。",
+    "你喜欢绿+棕，你的相册里多是风景，你想要窗外是稻田与远山。\n呼伦贝尔给你的比这更多——无边的草原，马蹄声，还有比城市里干净十倍的星空。",
+    "去呼伦贝尔，做三天牧民。\n早上被马嘶声叫醒，中午吃手把肉，傍晚骑马看夕阳。这就是你一直想要的假期。"],
+   itinerary:["Day1：抵达海拉尔，前往额尔古纳湿地观景","Day2：草原深处骑马，蒙古包过夜看星空","Day3：金帐汗蒙古部落，体验牧民生活"],
+   food:"手把肉",foodDesc:"整块羊肉白煮，蘸盐巴就是美味，草原上最豪横的吃法",foodIcon:"🍖",
+   guide:{"season":"6-9月（草原最绿）·冬季雪景另有风情","budget":"人均 400-700元/天","tips":["🚗 景点分散，建议包车或租车，公共交通极不方便","🐴 骑马体验找草场私人蒙古包，价格更实惠","⭐ 远离灯光的草原深处星空是一生必看"],"xhs":"呼伦贝尔旅游攻略"}},
+
+  {name:"乌鲁木齐",icon:"🕌",natural:4,social:3,plan:2,slow:2,culture:5,heal:3,warm:2,taste:5,scene:"desert",c1:"#6A4A2A",c2:"#9A7A4A",
+   tag:"时光猎人",
+   analyses:["你对「不一样」有强烈的渴望。你想看到中国的另一副面孔。\n乌鲁木齐就是——维吾尔族的集市，喀什的古城，天山的壮阔，这里的一切都和你熟悉的中国截然不同。\n去了，你才知道这个国家有多大。",
+    "你喜欢偶遇传统节日，你愿意带手工艺品回家，你的相册里想有建筑和街景。\n乌鲁木齐的二道桥大巴扎，是全国文化密度最高的集市之一，一下午逛不完。",
+    "去乌鲁木齐，去感受一下地球的另一个维度。\n这里离欧洲比离上海还近，但又彻彻底底是中国的——这种奇妙的感觉，你只有亲自去了才能理解。"],
+   itinerary:["Day1：二道桥大巴扎+国际大巴扎，文化冲击满满","Day2：天山天池一日游，雪山倒映湖中","Day3：喀什古城延伸游，或返回前逛南山牧场"],
+   food:"大盘鸡",foodDesc:"鸡肉软嫩入味，宽面吸饱汤汁，新疆人的豪迈家常菜",foodIcon:"🍗",
+   guide:{"season":"5-9月（天山最美）","budget":"人均 400-700元/天","tips":["✈️ 新疆时差比北京晚2小时，按北京时间作息会很不适应","🛒 大巴扎讨价还价是常规操作，乐在其中","🏔️ 天山天池海拔近2000米，夏季凉爽带件外套"],"xhs":"乌鲁木齐旅游攻略"}},
+
+  {name:"开封",icon:"🎪",natural:1,social:4,plan:2,slow:3,culture:5,heal:2,warm:3,taste:5,scene:"ancient",c1:"#8A5A2A",c2:"#C08040",
+   tag:"烟火诗人",
+   analyses:["你想偶遇传统节日，你喜欢清明上河图，你想在旅途中偶遇苍蝇馆子。\n开封就是那幅画的原型——北宋的繁华在这里留下了最深的印记。\n晚上逛夜市，白天看包公祠，你会觉得穿越了。",
+    "开封是中国最「好吃」的小城之一，没有之一。\n桶子鸡、灌汤包、羊肉炕馍、胡辣汤……清明上河图描绘的那些市井烟火，在这里你还能找到。",
+    "去开封，不要想太多。\n就是逛，就是吃，就是感受一座宋朝遗留下来的城市，还在用最市井的方式活着。"],
+   itinerary:["Day1：清明上河园沉浸式宋文化体验","Day2：铁塔+龙亭+包公祠，历史满满一整天","Day3：夜市扫荡：灌汤包+羊肉炕馍+桶子鸡"],
+   food:"灌汤包",foodDesc:"皮薄汤多，一口下去小心烫嘴，北宋流传至今的美味",foodIcon:"🥟",
+   guide:{"season":"3-5月·9-11月（避开夏季酷热）","budget":"人均 200-350元/天（物价极低）","tips":["🎭 清明上河园晚上有表演，比白天更好看","🌙 鼓楼夜市是精华，当地人晚上9点后才来","💰 开封物价是全国最低之一，吃饱花不了多少钱"],"xhs":"开封旅游攻略"}},
+
+  {name:"宁波",icon:"⛵",natural:3,social:3,plan:4,slow:3,culture:4,heal:3,warm:3,taste:5,scene:"ocean",c1:"#2A5A7A",c2:"#4A8AAA",
+   tag:"烟火诗人",
+   analyses:["你喜欢古城小巷，你愿意带手工艺品，你想偶遇宝藏小店。\n宁波是江南最被低估的城市——河姆渡的史前文明，慈城的千年古县，天一阁的藏书文化，这些都是大多数游客不知道的宁波。",
+    "你是那种真的有点文化品位的旅行者。宁波正好——它不像苏杭那么拥挤，但人文底蕴一点不输。\n老外滩的租界遗韵，鼓楼步行街的烟火气，月湖的宁静，都是你的菜。",
+    "去宁波，吃海鲜，逛古城，找一家民宿住下来。\n这座城市不想出名，但它值得被你发现。"],
+   itinerary:["Day1：老外滩+鼓楼步行街，感受宁波的历史与现代","Day2：天一阁藏书楼+月湖景区，文化半日游","Day3：象山半岛出发，海岛+海鲜完美收尾"],
+   food:"宁波汤圆",foodDesc:"芝麻馅厚实，糯米皮劲道，一碗下去暖到心里",foodIcon:"🍡",
+   guide:{"season":"4-6月·9-11月","budget":"人均 350-600元/天","tips":["🦞 象山海鲜市场自购加工，新鲜价格低","🚢 普陀山从宁波坐船约2小时，可安排半日游","🏛️ 天一阁是中国现存最早的私家藏书楼，免费预约进入"],"xhs":"宁波旅游攻略"}},
+
+  {name:"漳州",icon:"🌺",natural:3,social:3,plan:3,slow:4,culture:4,heal:4,warm:5,taste:5,scene:"ancient",c1:"#7A3A5A",c2:"#AA6A80",
+   tag:"烟火诗人",
+   analyses:["你向往厦门，但不想人挤人。\n漳州就是厦门的「平行宇宙」——同样的闽南文化，同样的海，同样的古城，但游客少了十倍，物价低了一半，烟火气多了三倍。\n这是旅行老手才知道的目的地。",
+    "你喜欢古城小巷，你想偶遇宝藏小店，你愿意随便逛逛不走寻常路。\n漳州古城的修鞋匠、做糕饼的老奶奶、卖土笋冻的小摊，这些才是真正的闽南生活。",
+    "去漳州，别查太多攻略，就是走。\n这座城市的好，藏在你拐进的每一条小巷子里。"],
+   itinerary:["Day1：漳州古城漫步，台湾路骑楼街区吃吃逛逛","Day2：东山岛出发，风动石+马銮湾海滩","Day3：土楼一日游，永定客家土楼世界文化遗产"],
+   food:"沙茶面",foodDesc:"和厦门味道相近但更浓郁，配料更豪放，价格更实惠",foodIcon:"🍜",
+   guide:{"season":"3-5月·10-12月（全年温暖）","budget":"人均 200-400元/天（物价比厦门低很多）","tips":["🚌 从厦门坐高铁约20分钟，非常适合厦门延伸游","🌸 漳州水仙花是全国最有名的，冬季正开","🏰 永定土楼建议包车，景点分散"],"xhs":"漳州旅游攻略"}},
+
+  {name:"婺源",icon:"🌼",natural:5,social:2,plan:3,slow:5,culture:5,heal:5,warm:3,taste:3,scene:"mountain",c1:"#5A7A2A",c2:"#8AAA4A",
+   tag:"山河拾光者",
+   analyses:["你选了稻田与远山，你愿意一个人随便逛，你的相册里多是风景和天空。\n婺源是你要找的那个地方。\n3月油菜花开的时候，整个婺源就是一幅画——徽派白墙黑瓦浮在金黄的花海里，你会觉得这个世界真的很美。",
+    "你喜欢古城小巷，你想带手工艺品回家，你愿意停下来为一朵野花发呆。\n婺源是中国最美乡村，不是评选出来的，是你走进去了才明白的。\n晓起、李坑、江岭，每一个村子都有自己的故事。",
+    "去婺源，不要赶，就是慢慢走。\n这里的美是需要你走进去的——走进油菜花田，走进百年老宅，走进那条没有游客的小溪边。"],
+   itinerary:["Day1：江岭梯田观景台，油菜花季绝对的No.1视角","Day2：李坑+晓起古村漫步，徽派建筑+溪流+古树","Day3：篁岭晒秋（秋季）或菊径环形村（任何季节）"],
+   food:"荷包红鲤鱼",foodDesc:"婺源特产，肉质细嫩，清蒸最佳，是当地人待客的头牌菜",foodIcon:"🐟",
+   guide:{"season":"3-4月（油菜花）·10-11月（晒秋）","budget":"人均 300-500元/天","tips":["🌼 江岭观景台3月最美，节假日非常拥挤提前订票","🏘️ 晒秋在篁岭，10月最正宗，辣椒南瓜铺满屋顶","🚗 景点分散，建议包车或租电动车"],"xhs":"婺源旅游攻略"}},
+
+  {name:"洛阳",icon:"🌸",natural:2,social:4,plan:2,slow:3,culture:5,heal:3,warm:3,taste:4,scene:"ancient",c1:"#7A3A6A",c2:"#AA6A9A",
+   tag:"时光猎人",
+   analyses:["你对历史文化有真实的兴趣，你喜欢偶遇传统节日，你的相册里有建筑和街景。\n洛阳是你的——十三朝古都，龙门石窟，牡丹花城。\n4月牡丹盛开的时候，整座城市都是花，你会明白为什么古人说「唯有牡丹真国色，花开时节动京城」。",
+    "你是那种会在龙门石窟前发呆很久的人。\n那些北魏时期凿刻的佛像，历经1500年还是那么庄严。洛阳给你的不只是美，是一种让你沉默下来的厚重感。",
+    "去洛阳，找一家老字号吃一碗水席，再去隋唐城遗址发呆。\n这座城市的好，在花开时最明显，但任何时候去都不会让你失望。"],
+   itinerary:["Day1：龙门石窟半天，奉先寺大佛震撼人心","Day2：白马寺+隋唐洛阳城遗址，历史一整天","Day3：洛邑古城夜游，牡丹季直接在园区看花"],
+   food:"洛阳水席",foodDesc:"24道菜全是汤汤水水，酸辣咸香，吃完才懂洛阳人的讲究",foodIcon:"🍲",
+   guide:{"season":"3-5月（牡丹季4月最旺）·9-11月","budget":"人均 300-500元/天","tips":["🌸 牡丹节4月上旬，国花园+西苑公园最正宗，人极多","🗿 龙门石窟建议早上开园就进，避开人流高峰","🌙 洛邑古城夜游比白天好看，灯光非常漂亮"],"xhs":"洛阳旅游攻略"}},
+
+  {name:"稻城",icon:"🏔️",natural:5,social:1,plan:3,slow:4,culture:4,heal:5,warm:1,taste:1,scene:"plateau",c1:"#3A5A8A",c2:"#6A8ABB",
+   tag:"灵魂避风港",
+   analyses:["你选了只有自己的美景，你想彻底逃离，你的相册里是风景和天空。\n稻城亚丁是中国最接近「天堂」定义的地方。\n蓝色的湖，白色的雪山，金色的树林，神山三怙主矗立在那里，安静得让你忘记自己从哪里来。",
+    "你是那种真的需要被大自然重置一次的人。\n海拔4000米的高原，三座神山守护的圣湖，空气薄得让你每走一步都要停下来喘气——但正是这种「艰难」，让你到达之后的那种震撼，变成了一生难忘的记忆。",
+    "去稻城，不要赶行程。\n这里的美需要你慢下来才看得见，需要你喘着气停在山顶，才能真正感受到「值得」这两个字的重量。"],
+   itinerary:["Day1：抵达稻城，充分休息适应高原，禁止剧烈运动","Day2：亚丁景区冲古寺+珍珠海，最美核心区","Day3：洛绒牛场+牛奶海+五色海（体力好才走）"],
+   food:"牦牛火锅",foodDesc:"高原牦牛肉质鲜嫩无膻味，配藏式蘸料，是稻城最治愈的一顿饭",foodIcon:"🍲",
+   guide:{"season":"9-11月（金秋最美）·6-8月（高原夏季）","budget":"人均 500-800元/天（景区内住宿贵）","tips":["✈️ 建议飞稻城亚丁机场直达，不要自驾进来耗体力","🏔️ 景区海拔4000m+，心肺功能差慎重前往","🎟️ 景区通票约270元，内部需乘摆渡车，提前网上预约"],"xhs":"稻城亚丁旅游攻略"}}
 ];
 
 const conflictTexts={
@@ -611,7 +770,8 @@ function calcConfidence(ans,extreme){
 
 // 城市硬性过滤条件（防止某些城市被不合适的用户匹配）
 const cityFilters={
-  '哈尔滨': u=>u.warm<1.8,   // 只推给偏好凉爽/寒冷气候的人
+  '哈尔滨': u=>u.warm<1.8,
+  '稻城':   u=>u.natural>3.5&&u.heal>3.0,  // 只推给真正的自然控+治愈需求高的用户   // 只推给偏好凉爽/寒冷气候的人
 };
 
 function getFinalWeights(){
@@ -681,6 +841,8 @@ function generateResult(){
     const ranked=matchCities(norm);
     const topCity=ranked[0].city;
     const personality=getPersonality(norm);
+    // 保存状态供 switchCity 使用
+    _lastRanked=ranked;_lastRaw=raw;_lastNorm=norm;_lastConf=conf;_lastReal=real;
     renderResult(topCity,raw,norm,conf,real,ranked);
     analytics.trackComplete(topCity,conf,real,personality); // 埋点：结果生成
     showScreen('result');
@@ -704,13 +866,15 @@ function renderResult(city,raw,norm,conf,real,ranked){
   const warn=document.getElementById('confidence-warning');
   warn.style.display=conf<60?'block':'none';
 
-  // alt cities
-  const altSec=document.getElementById('alt-cities-section');
-  if(conf<60){
-    const probs=softmaxTop3(ranked);
-    document.getElementById('alt-cities').innerHTML=probs.map(p=>`<div class="alt-city-card"><div class="alt-city-icon">${p.city.icon}</div><div class="alt-city-name">${p.city.name}</div><div class="alt-city-pct">${p.pct}%</div></div>`).join('');
-    altSec.style.display='block';
-  }else altSec.style.display='none';
+  // 永远显示3个相似备选城市（跳过第0名即当前城市）
+  // 点击可切换查看该城市的结果
+  const altTop=ranked.slice(1,4);
+  document.getElementById('alt-cities').innerHTML=altTop.map(r=>`
+    <div class="alt-city-card" onclick="switchCity('${r.city.name}')" style="cursor:pointer">
+      <div class="alt-city-icon">${r.city.icon}</div>
+      <div class="alt-city-name">${r.city.name}</div>
+      <div class="alt-city-pct">点击查看</div>
+    </div>`).join('');
 
   // analysis
   const aIdx=Math.floor(Math.random()*city.analyses.length);
@@ -736,6 +900,27 @@ function renderResult(city,raw,norm,conf,real,ranked){
 
   document.getElementById('itinerary').innerHTML=city.itinerary.map((d,i)=>`<div class="day-item"><div class="day-dot">D${i+1}</div><div class="day-text">${d}</div></div>`).join('');
   document.getElementById('food-card').innerHTML=`<div class="food-icon">${city.foodIcon}</div><div><div class="food-name">${city.food}</div><div class="food-desc">${city.foodDesc}</div></div>`;
+
+  // 旅游攻略卡片
+  if(city.guide){
+    const g=city.guide;
+    document.getElementById('guide-card').innerHTML=`
+      <div class="guide-meta">
+        <div class="guide-meta-item"><div class="guide-meta-label">最佳季节</div><div class="guide-meta-val">${g.season}</div></div>
+        <div class="guide-meta-item"><div class="guide-meta-label">人均消费</div><div class="guide-meta-val">${g.budget}</div></div>
+      </div>
+      <div class="guide-tips">${g.tips.map(t=>`<div class="guide-tip">${t}</div>`).join('')}</div>`;
+    document.getElementById('guide-section').style.display='block';
+  } else {
+    document.getElementById('guide-section').style.display='none';
+  }
+
+  // 小红书搜索直达
+  const xhsKeyword=city.guide?.xhs||`${city.name}旅游攻略`;
+  const xhsUrl=`https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(xhsKeyword)}&source=web_search_result_notes`;
+  document.getElementById('xhs-link').href=xhsUrl;
+  document.getElementById('xhs-keyword').textContent=`搜索「${xhsKeyword}」`;
+
 }
 
 // ── PHOTO SYSTEM：三层兜底 ──
@@ -745,26 +930,39 @@ function renderResult(city,raw,norm,conf,real,ranked){
 
 // 【第一层】本地图片路径表 — 运行 setup_photos.py 后由脚本自动更新此处
 const cityPhotos={
-  '厦门':'./xiamen.jpg',
-  '大理':'./dali.jpg',
-  '成都':'./chengdu.jpg',
-  '青岛':'./qingdao.jpg',
-  '西安':'./xian.jpg',
-  '上海':'./shanghai.jpg',
-  '桂林':'./guilin.jpg',
-  '拉萨':'./lasa.jpg',
-  '长沙':'./changsha.jpg',
-  '威海':'./weihai.jpg',
-  '泉州':'./quanzhou.jpg',
-  '腾冲':'./tengchong.jpg',
-  '杭州':'./hangzhou.jpg',
-  '苏州':'./suzhou.jpg',
-  '重庆':'./chongqing.jpg',
-  '广州':'./guangzhou.jpg',
-  '丽江':'./lijiang.jpg',
-  '敦煌':'./dunhuang.jpg',
-  '哈尔滨':'./haerbin.jpg',
-  '三亚':'./sanya.jpg'
+  '厦门':'./images/xiamen.jpg',
+  '大理':'./images/dali.jpg',
+  '成都':'./images/chengdu.jpg',
+  '青岛':'./images/qingdao.jpg',
+  '西安':'./images/xian.jpg',
+  '上海':'./images/shanghai.jpg',
+  '桂林':'./images/guilin.jpg',
+  '拉萨':'./images/lasa.jpg',
+  '长沙':'./images/changsha.jpg',
+  '威海':'./images/weihai.jpg',
+  '泉州':'./images/quanzhou.jpg',
+  '腾冲':'./images/tengchong.jpg',
+  '杭州':'./images/hangzhou.jpg',
+  '苏州':'./images/suzhou.jpg',
+  '重庆':'./images/chongqing.jpg',
+  '广州':'./images/guangzhou.jpg',
+  '丽江':'./images/lijiang.jpg',
+  '敦煌':'./images/dunhuang.jpg',
+  '哈尔滨':'./images/haerbin.jpg',
+  '三亚':'./images/sanya.jpg',
+  '北京':'./images/beijing.jpg',
+  '黄山':'./images/huangshan.jpg',
+  '张家界':'./images/zhangjiajie.jpg',
+  '南京':'./images/nanjing.jpg',
+  '昆明':'./images/kunming.jpg',
+  '呼伦贝尔':'./images/hulunbeier.jpg',
+  '乌鲁木齐':'./images/wulumuqi.jpg',
+  '开封':'./images/kaifeng.jpg',
+  '宁波':'./images/ningbo.jpg',
+  '漳州':'./images/zhangzhou.jpg',
+  '婺源':'./images/wuyuan.jpg',
+  '洛阳':'./images/luoyang.jpg',
+  '稻城':'./images/daocheng.jpg'
 };
 
 const UNSPLASH_KEY='CuBc0BLuqMUHExh7V7os7BBRDy_55Fz3t7A-ssMT8uY';
@@ -849,6 +1047,18 @@ function shareResult(){
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// 点击备选城市切换查看
+let _lastRanked=[];
+let _lastRaw={},_lastNorm={},_lastConf=100,_lastReal=[];
+function switchCity(cityName){
+  const city=cities.find(c=>c.name===cityName);
+  if(!city)return;
+  // 重新渲染结果页，但保留ranked用于备选城市列表
+  renderResult(city,_lastRaw,_lastNorm,_lastConf,_lastReal,_lastRanked);
+  window.scrollTo(0,0);
+  showToast(`已切换到 ${city.icon} ${cityName}`);
+}
 
 // touch swipe back
 let txStart=0;
