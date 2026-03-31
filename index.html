@@ -76,26 +76,39 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 .btn-confirm:hover{background:var(--rose-dark)}
 .confirm-missing-tip{font-size:13px;color:#c0533a;text-align:center;margin-top:8px;display:none}
 
-/* LOADING */
+/* LOADING — 城市卡片飞入动画 */
 #loading{align-items:center;justify-content:center;background:var(--cream)}
-.loading-spin{width:56px;height:56px;border:3px solid var(--beige);border-top-color:var(--rose);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 20px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-family:'Noto Serif SC',serif;font-size:18px;color:var(--text-dark)}
-.loading-sub{font-size:13px;color:var(--text-light);margin-top:6px;text-align:center}
+.loading-inner{text-align:center;padding:0 24px;width:100%;max-width:420px}
+.loading-cities{display:flex;justify-content:center;gap:10px;margin-bottom:28px;min-height:80px;align-items:center}
+.loading-city-card{background:var(--card-bg);border:1px solid var(--beige);border-radius:14px;padding:12px 16px;font-size:22px;opacity:0;transform:translateY(20px);transition:all .5s ease;text-align:center;min-width:60px}
+.loading-city-card.show{opacity:1;transform:translateY(0)}
+.loading-city-name{font-size:12px;color:var(--text-light);margin-top:4px}
+.loading-text{font-family:'Noto Serif SC',"STSong",serif;font-size:19px;color:var(--text-dark);margin-bottom:6px}
+.loading-sub{font-size:13px;color:var(--text-light);margin-bottom:20px}
+.loading-bar-wrap{width:100%;height:3px;background:var(--beige);border-radius:4px;overflow:hidden}
+.loading-bar-fill{height:100%;width:0%;background:var(--rose);border-radius:4px;transition:width .3s ease}
 
 /* RESULT */
 #result{background:var(--cream);padding-bottom:60px}
-.result-header{position:relative;width:100%;height:300px;overflow:hidden;display:flex;align-items:flex-end;padding:24px}
-.result-header-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,rgba(0,0,0,.05) 60%,transparent 100%)}
+.result-header{position:relative;width:100%;height:320px;overflow:hidden;display:flex;align-items:flex-end;padding:24px}
+.result-header-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.1) 55%,transparent 100%)}
 .result-header-content{position:relative;z-index:1}
 .result-label{font-size:13px;color:rgba(255,255,255,.85);margin-bottom:4px}
-.result-city-name{font-family:'Ma Shan Zheng',"STKaiti",serif;font-size:clamp(44px,12vw,64px);color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.3);line-height:1.1}
+.result-city-name{font-family:'Ma Shan Zheng',"STKaiti",serif;font-size:clamp(48px,13vw,68px);color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.4);line-height:1.1}
 .result-tag-label{display:inline-block;background:rgba(255,255,255,.22);color:#fff;font-size:13px;padding:4px 12px;border-radius:20px;margin-top:8px;border:1px solid rgba(255,255,255,.3)}
 .result-body{padding:0 20px;max-width:600px;margin:0 auto}
-.confidence-warning{margin:16px 0;background:rgba(230,184,162,.2);border:1px solid rgba(230,184,162,.5);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--text-mid);display:none}
-.result-section{margin-top:24px}
-.result-section-title{font-size:12px;color:var(--text-light);letter-spacing:1.5px;margin-bottom:12px}
-.result-analysis{font-family:'Noto Serif SC',"STSong",serif;font-size:15px;line-height:1.9;color:var(--text-dark);background:var(--card-bg);border-radius:16px;padding:20px;border:1px solid var(--beige)}
+.confidence-warning{margin:16px 0 0;background:rgba(230,184,162,.2);border:1px solid rgba(230,184,162,.5);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--text-mid);display:none}
+
+/* 分析文案 — 最重要内容，突出显示 */
+.result-analysis-wrap{margin-top:20px}
+.result-analysis{font-family:'Noto Serif SC',"STSong",serif;font-size:16px;line-height:2;color:var(--text-dark);background:var(--card-bg);border-radius:20px;padding:24px;border:1px solid var(--beige);position:relative;box-shadow:0 2px 16px rgba(212,165,165,.1)}
+.result-analysis::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--rose),var(--warm-orange));border-radius:20px 20px 0 0}
+
+/* section title — 简洁中文风格 */
+.result-section{margin-top:28px}
+.result-section-title{font-size:13px;color:var(--text-light);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.result-section-title::before{content:'';display:inline-block;width:3px;height:12px;background:var(--rose);border-radius:2px;flex-shrink:0}
+
 .conflict-box{background:rgba(212,165,165,.1);border:1px solid rgba(212,165,165,.3);border-radius:16px;padding:20px;margin-top:16px;font-size:14px;line-height:1.8;color:var(--text-dark);display:none}
 .score-bars{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .score-row{display:flex;align-items:center;gap:10px}
@@ -112,16 +125,23 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 .food-name{font-size:16px;font-weight:500;color:var(--text-dark)}
 .food-desc{font-size:13px;color:var(--text-light);margin-top:2px}
 .alt-cities{display:flex;gap:10px}
-.alt-city-card{flex:1;background:var(--card-bg);border:1px solid var(--beige);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:all .15s}
-.alt-city-card:hover{border-color:var(--rose);transform:translateY(-2px);box-shadow:0 4px 16px rgba(212,165,165,.2)}
+.alt-city-card{flex:1;background:var(--card-bg);border:1px solid var(--beige);border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .15s}
+.alt-city-card::after{content:'换这个 →';position:absolute;bottom:0;left:0;right:0;background:var(--rose);color:#fff;font-size:11px;padding:4px 0;transform:translateY(100%);transition:transform .18s}
+.alt-city-card:hover{border-color:var(--rose);transform:translateY(-3px);box-shadow:0 6px 20px rgba(212,165,165,.25)}
+.alt-city-card:hover::after{transform:translateY(0)}
 .alt-city-card:active{transform:scale(.97)}
-.alt-city-icon{font-size:26px;margin-bottom:6px}
-.alt-city-name{font-size:14px;font-weight:500;color:var(--text-dark)}
-.alt-city-pct{font-size:13px;color:var(--rose);margin-top:2px}
-.share-area{margin:32px 0 16px;display:flex;flex-direction:column;gap:12px}
-.btn-share{width:100%;background:var(--rose);color:#fff;border:none;border-radius:48px;padding:16px;font-size:15px;font-family:inherit;cursor:pointer;transition:all .15s}
-.btn-share:hover{background:var(--rose-dark)}
-.btn-retry{width:100%;background:none;border:1.5px solid var(--beige);border-radius:48px;padding:14px;font-size:15px;color:var(--text-mid);font-family:inherit;cursor:pointer;transition:all .15s}
+.alt-city-icon{font-size:24px;margin-bottom:4px}
+.alt-city-name{font-size:13px;font-weight:500;color:var(--text-dark)}
+.alt-city-pct{font-size:11px;color:var(--rose);margin-top:2px}
+.share-area{margin:32px 0 16px;display:flex;flex-direction:column;gap:10px}
+.btn-share{width:100%;background:linear-gradient(135deg,var(--rose),var(--rose-dark));color:#fff;border:none;border-radius:16px;padding:16px 20px;font-family:inherit;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:14px;box-shadow:0 8px 24px rgba(212,165,165,.45)}
+.btn-share:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(212,165,165,.55)}
+.btn-share:active{transform:scale(.98)}
+.btn-share-icon{font-size:28px;flex-shrink:0}
+.btn-share-text{text-align:left;flex:1}
+.btn-share-main{display:block;font-size:16px;font-weight:500;letter-spacing:.3px}
+.btn-share-sub{display:block;font-size:12px;opacity:.85;margin-top:2px}
+.btn-retry{width:100%;background:none;border:1.5px solid var(--beige);border-radius:48px;padding:13px;font-size:14px;color:var(--text-light);font-family:inherit;cursor:pointer;transition:all .15s}
 .btn-retry:hover{border-color:var(--rose);color:var(--rose)}
 .fix-entry{text-align:center;font-size:13px;color:var(--text-light);margin-top:8px;cursor:pointer}
 .fix-entry span{color:var(--rose);text-decoration:underline}
@@ -131,7 +151,7 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 .guide-meta{display:flex;gap:0;border-bottom:1px solid var(--beige)}
 .guide-meta-item{flex:1;padding:12px 14px;text-align:center;border-right:1px solid var(--beige)}
 .guide-meta-item:last-child{border-right:none}
-.guide-meta-label{font-size:11px;color:var(--text-light);margin-bottom:4px;letter-spacing:.5px}
+.guide-meta-label{font-size:11px;color:var(--text-light);margin-bottom:4px}
 .guide-meta-val{font-size:13px;color:var(--text-dark);font-weight:500;line-height:1.4}
 .guide-tips{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .guide-tip{font-size:13px;color:var(--text-mid);line-height:1.6}
@@ -146,7 +166,7 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
 .xhs-arrow{font-size:18px;color:#cc3333;flex-shrink:0}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text-dark);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(min-width:600px){.confirm-list{display:grid;grid-template-columns:repeat(2,1fr)}.result-header{height:360px}}
+@media(min-width:600px){.result-header{height:380px}}
 </style>
 </head>
 <body>
@@ -157,13 +177,13 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
   <div class="home-icon">🧭</div>
   <div class="home-tag">心理旅行测评</div>
   <h1 class="home-title">测测你最近<br>最适合去哪座城市</h1>
-  <p class="home-sub">20道题，读懂你藏在选择里的旅行灵魂，为你匹配一座专属城市。</p>
+  <p class="home-sub">20道题，读懂你藏在选择里的旅行灵魂，为你匹配专属城市。</p>
   <div class="home-pills">
     <span class="pill">🌊 治愈系</span><span class="pill">🍜 美食控</span>
     <span class="pill">🏯 文化控</span><span class="pill">🌲 自然派</span><span class="pill">☕ 慢生活</span>
   </div>
   <button class="btn-start" onclick="startQuiz()">开始测试</button>
-  <p class="home-note">约3分钟 · 20个城市备选</p>
+  <p class="home-note">约5分钟 · 33个城市备选</p>
 </div>
 
 <!-- QUIZ -->
@@ -183,26 +203,26 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
   </div>
 </div>
 
-<!-- CONFIRM -->
+<!-- CONFIRM（轻量版，仅在有未答题时出现） -->
 <div id="confirm" class="screen">
-  <div style="max-width:600px;margin:0 auto;width:100%">
-    <div style="font-size:28px;margin-bottom:8px">📋</div>
-    <h2 class="confirm-title">确认你的答案</h2>
-    <p class="confirm-sub">认真看一遍，手滑了可以修改哦</p>
-    <div class="confirm-list" id="confirm-list"></div>
-  </div>
-  <div class="confirm-footer">
-    <button class="btn-confirm" onclick="tryGenerate()">🔮 确认无误，生成结果</button>
-    <div class="confirm-missing-tip" id="missing-tip">⚠️ 还有题目未作答，请点击对应题目的「修改」补充</div>
+  <div style="max-width:600px;margin:0 auto;width:100%;padding:40px 24px;text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+    <h2 class="confirm-title" style="margin-bottom:8px">还有题目没有作答</h2>
+    <p class="confirm-sub" style="margin-bottom:32px">请回去补全所有题目，结果会更准哦</p>
+    <div id="confirm-list" style="text-align:left;margin-bottom:24px"></div>
+    <button class="btn-confirm" onclick="backToQuiz()" style="background:none;color:var(--rose);border:1.5px solid var(--rose);margin-bottom:12px">← 回去补全</button>
+    <br>
+    <button class="btn-confirm" onclick="generateResult()" style="opacity:.6;font-size:14px;padding:12px">跳过未答的题，直接生成</button>
   </div>
 </div>
 
 <!-- LOADING -->
 <div id="loading" class="screen">
-  <div style="text-align:center">
-    <div class="loading-spin"></div>
+  <div class="loading-inner">
+    <div class="loading-cities" id="loading-cities"></div>
     <div class="loading-text" id="loading-text">正在解读你的灵魂…</div>
-    <div class="loading-sub">匹配全国20座城市中</div>
+    <div class="loading-sub">为你匹配最适合的城市</div>
+    <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loading-bar-fill"></div></div>
   </div>
 </div>
 
@@ -217,33 +237,43 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
     </div>
   </div>
   <div class="result-body">
-    <div class="confidence-warning" id="confidence-warning">⚠️ 你的答案有些矛盾，结果仅供参考——也可以点击下方重新测试</div>
-    <div id="alt-cities-section" class="result-section">
-      <div class="result-section-title">相似的备选城市</div>
-      <div class="alt-cities" id="alt-cities"></div>
-    </div>
-    <div class="result-section">
-      <div class="result-section-title">你的旅行灵魂</div>
+    <div class="confidence-warning" id="confidence-warning">⚠️ 你的答案有些矛盾，结果仅供参考</div>
+
+    <!-- 旅行灵魂分析（最重要，放最前，去掉section-title） -->
+    <div class="result-analysis-wrap">
       <div class="result-analysis" id="result-analysis"></div>
     </div>
+
     <div class="conflict-box" id="conflict-box">
       <div style="font-size:20px;margin-bottom:8px">🌟</div>
       <div id="conflict-text"></div>
     </div>
+
+    <!-- 相似备选城市 -->
+    <div class="result-section" id="alt-cities-section">
+      <div class="result-section-title">你可能也适合这些城市</div>
+      <div class="alt-cities" id="alt-cities"></div>
+    </div>
+
+    <!-- 维度画像 -->
     <div class="result-section" id="score-section">
-      <div class="result-section-title">你的维度画像</div>
+      <div class="result-section-title">你的旅行维度</div>
       <div class="score-bars" id="score-bars"></div>
     </div>
+
+    <!-- 行程 -->
     <div class="result-section">
-      <div class="result-section-title">3天行程建议</div>
+      <div class="result-section-title">三天怎么玩</div>
       <div class="itinerary" id="itinerary"></div>
     </div>
+
+    <!-- 美食 -->
     <div class="result-section">
-      <div class="result-section-title">必吃一道菜</div>
+      <div class="result-section-title">去了一定要吃</div>
       <div class="food-card" id="food-card"></div>
     </div>
 
-    <!-- 旅游攻略卡片 -->
+    <!-- 旅游攻略 -->
     <div class="result-section" id="guide-section">
       <div class="result-section-title">出发前要知道</div>
       <div class="guide-card" id="guide-card"></div>
@@ -262,12 +292,19 @@ body{font-family:'Noto Sans SC',"PingFang SC","Microsoft YaHei",sans-serif;backg
       </a>
     </div>
 
+    <!-- 分享区 -->
     <div class="share-area">
-      <button class="btn-share" onclick="shareResult()">📤 @那个最该陪你去的人</button>
-      <button class="btn-retry" onclick="restartQuiz()">🔄 重新测试一次</button>
+      <button class="btn-share" onclick="shareResult()">
+        <span class="btn-share-icon">✈️</span>
+        <span class="btn-share-text">
+          <span class="btn-share-main">分享给要一起去的人</span>
+          <span class="btn-share-sub">让他/她也来测测</span>
+        </span>
+      </button>
+      <button class="btn-retry" onclick="restartQuiz()">重新测一次</button>
     </div>
-    <div class="fix-entry" onclick="goToConfirm()">🤔 觉得不准？<span>回去修正关键题</span></div>
-    <div style="height:40px"></div>
+    <div class="fix-entry" onclick="goToConfirm()">🤔 觉得结果不准？<span>点这里修正答案</span></div>
+    <div style="height:48px"></div>
   </div>
 </div>
 
@@ -665,15 +702,42 @@ function restartQuiz(){startQuiz()}
 function goToConfirm(){showConfirm()}
 
 // ── QUIZ ──
+// 鼓励文案：按进度阶段显示
+const encouragements=[
+  '',                          // Q1
+  '',                          // Q2
+  '继续选，别想太多～',          // Q3
+  '',                          // Q4
+  '选出你的感觉就好 😌',        // Q5
+  '',                          // Q6
+  '',                          // Q7
+  '已经过半了！',               // Q8
+  '',                          // Q9
+  '',                          // Q10
+  '快了快了，再坚持一下～',      // Q11
+  '',                          // Q12
+  '',                          // Q13
+  '倒数几题，认真选！',          // Q14
+  '',                          // Q15
+  '',                          // Q16
+  '',                          // Q17
+  '马上就能看结果了 🎉',        // Q18
+  '',                          // Q19
+  '',                          // Q20
+];
+
 function renderQuestion(){
   const q=questions[currentQ];
   document.getElementById('q-num').textContent=`Q${currentQ+1}`;
   document.getElementById('q-text').textContent=q.text;
   document.getElementById('progress-text').textContent=`第 ${currentQ+1} / 20 题`;
-  const pct=Math.round(currentQ/15*100);
+  const pct=Math.round((currentQ)/20*100);
   document.getElementById('progress-pct').textContent=pct+'%';
   document.getElementById('progress-fill').style.width=pct+'%';
   document.getElementById('btn-prev').disabled=currentQ===0;
+  // 鼓励文案
+  const hint=document.getElementById('q-hint');
+  hint.textContent=encouragements[currentQ]||'';
   const opts=document.getElementById('q-options');
   opts.innerHTML='';
   q.opts.forEach((opt,i)=>{
@@ -684,44 +748,55 @@ function renderQuestion(){
     opts.appendChild(btn);
   });
 }
+
 function selectOption(i){
   timePerQ[currentQ]=(Date.now()-questionStartTime)/1000;
   questionStartTime=Date.now();
   answers[currentQ]=i;
   document.querySelectorAll('.option-btn').forEach((b,idx)=>b.classList.toggle('selected',idx===i));
-  setTimeout(()=>{if(currentQ<19){currentQ++;renderQuestion();}else showConfirm();},300);
+  setTimeout(()=>{
+    if(currentQ<19){currentQ++;renderQuestion();}
+    else{
+      // 最后一题：直接检查有无未答，有则进确认页，无则直接生成
+      const missing=answers.findIndex(a=>a===null);
+      if(missing!==-1) showConfirm();
+      else generateResult();
+    }
+  },300);
 }
+
 function prevQuestion(){if(currentQ>0){returnCount++;currentQ--;renderQuestion();}}
 
-// ── CONFIRM ── FIX: record enter time when page opens
+function backToQuiz(){
+  // 跳到第一道未答的题
+  const missing=answers.findIndex(a=>a===null);
+  currentQ=missing>=0?missing:0;
+  renderQuestion();showScreen('quiz');
+}
+
+// ── CONFIRM（仅在有未答题时出现）──
 function showConfirm(){
   confirmEnterTime=Date.now();
   const list=document.getElementById('confirm-list');
   list.innerHTML='';
-  questions.forEach((q,i)=>{
-    const ans=answers[i];
+  // 只显示未答的题
+  const missingItems=answers.map((a,i)=>({i,a})).filter(({a})=>a===null);
+  missingItems.forEach(({i})=>{
+    const q=questions[i];
     const item=document.createElement('div');
-    item.className='confirm-item'+(ans===null?' missing-item':'');
-    item.innerHTML=`<span class="confirm-item-q">${i+1}. ${q.text.slice(0,12)}…</span>
-      <span class="confirm-item-a">${ans!==null?q.opts[ans].replace(/^[^\s]+\s/,''):'<span style="color:#c0533a;font-weight:500">未选 ⚠️</span>'}</span>
-      <span class="confirm-item-edit" onclick="editQuestion(${i})">修改</span>`;
+    item.style.cssText='display:flex;justify-content:space-between;align-items:center;background:rgba(192,83,58,.08);border:1px solid rgba(192,83,58,.3);border-radius:12px;padding:12px 16px;margin-bottom:10px;font-size:14px;';
+    item.innerHTML=`<span style="color:var(--text-mid);flex:1">Q${i+1}. ${q.text.slice(0,15)}…</span>
+      <span style="color:#c0533a;font-weight:500;cursor:pointer;padding:4px 12px;background:rgba(192,83,58,.1);border-radius:8px" onclick="editQuestion(${i})">去作答</span>`;
     list.appendChild(item);
   });
-  document.getElementById('missing-tip').style.display='none';
   showScreen('confirm');
 }
-function editQuestion(idx){currentQ=idx;questionStartTime=Date.now();renderQuestion();showScreen('quiz')}
 
-// FIX: guard against unanswered questions
-function tryGenerate(){
-  const missing=answers.findIndex(a=>a===null);
-  if(missing!==-1){
-    document.getElementById('missing-tip').style.display='block';
-    document.querySelectorAll('.confirm-item')[missing]?.scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
-  generateResult();
-}
+function editQuestion(idx){currentQ=idx;questionStartTime=Date.now();renderQuestion();showScreen('quiz')}
+function goToConfirm(){showConfirm();}
+
+// 直接生成（跳过未答）
+function tryGenerate(){generateResult();}
 
 // ── ALGORITHM ──
 function calcPenalizedScores(ans,extreme){
@@ -829,11 +904,31 @@ function getPersonality(norm){
 // ── GENERATE ──
 function generateResult(){
   showScreen('loading');
-  const msgs=["正在解读你的灵魂…","为你匹配最佳城市…","计算旅行维度中…","你的专属城市即将揭晓…"];
-  let li=0;const el=document.getElementById('loading-text');
-  const t=setInterval(()=>el.textContent=msgs[li++%msgs.length],600);
+
+  // 城市卡片飞入动画
+  const cityIcons = cities.map(c=>({icon:c.icon,name:c.name}));
+  const picks = [...cityIcons].sort(()=>Math.random()-.5).slice(0,3);
+  const container = document.getElementById('loading-cities');
+  container.innerHTML = picks.map(c=>`<div class="loading-city-card"><div>${c.icon}</div><div class="loading-city-name">${c.name}</div></div>`).join('');
+  const cards = container.querySelectorAll('.loading-city-card');
+  cards.forEach((card,i)=>setTimeout(()=>card.classList.add('show'),i*150+100));
+
+  // 进度条动画
+  const bar = document.getElementById('loading-bar-fill');
+  let pct=0; const barT=setInterval(()=>{pct=Math.min(90,pct+3);bar.style.width=pct+'%';},80);
+
+  // 文案轮播
+  const msgs=["正在解读你的灵魂…","分析你的旅行性格…","匹配最适合的城市…","快好了，稍等一下…"];
+  let li=0; const el=document.getElementById('loading-text');
+  const t=setInterval(()=>{
+    el.style.opacity=0;
+    setTimeout(()=>{el.textContent=msgs[li++%msgs.length];el.style.opacity=1;},200);
+  },700);
+  el.style.transition='opacity .2s';
+
   setTimeout(()=>{
-    clearInterval(t);
+    clearInterval(t); clearInterval(barT);
+    bar.style.width='100%';
     const{extreme,real}=detectConflicts(answers);
     const raw=calcPenalizedScores(answers,extreme);
     const norm=normalize(raw);
@@ -841,12 +936,11 @@ function generateResult(){
     const ranked=matchCities(norm);
     const topCity=ranked[0].city;
     const personality=getPersonality(norm);
-    // 保存状态供 switchCity 使用
     _lastRanked=ranked;_lastRaw=raw;_lastNorm=norm;_lastConf=conf;_lastReal=real;
     renderResult(topCity,raw,norm,conf,real,ranked);
-    analytics.trackComplete(topCity,conf,real,personality); // 埋点：结果生成
+    analytics.trackComplete(topCity,conf,real,personality);
     showScreen('result');
-  },2400);
+  },2600);
 }
 
 // ── RENDER RESULT ──
@@ -867,18 +961,22 @@ function renderResult(city,raw,norm,conf,real,ranked){
   warn.style.display=conf<60?'block':'none';
 
   // 永远显示3个相似备选城市（跳过第0名即当前城市）
-  // 点击可切换查看该城市的结果
   const altTop=ranked.slice(1,4);
   document.getElementById('alt-cities').innerHTML=altTop.map(r=>`
-    <div class="alt-city-card" onclick="switchCity('${r.city.name}')" style="cursor:pointer">
+    <div class="alt-city-card" onclick="switchCity('${r.city.name}')">
       <div class="alt-city-icon">${r.city.icon}</div>
       <div class="alt-city-name">${r.city.name}</div>
-      <div class="alt-city-pct">点击查看</div>
+      <div class="alt-city-sub">${r.city.tag||'也很适合你'}</div>
     </div>`).join('');
 
-  // analysis
+  // 分析文案：按段落渲染，避免空行问题
   const aIdx=Math.floor(Math.random()*city.analyses.length);
-  document.getElementById('result-analysis').innerHTML=city.analyses[aIdx].replace(/\n/g,'<br>');
+  const analysisHtml = city.analyses[aIdx]
+    .split('\n')
+    .filter(p=>p.trim())
+    .map(p=>`<p style="margin-bottom:1em">${p}</p>`)
+    .join('');
+  document.getElementById('result-analysis').innerHTML=analysisHtml;
 
   // conflict
   const cb=document.getElementById('conflict-box');
